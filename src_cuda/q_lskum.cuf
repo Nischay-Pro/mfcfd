@@ -29,9 +29,9 @@ contains
                 integer :: rk, blockDim
                 real*8 :: start, finish, time
 
-                OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                !OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
                 call compute_normals()
                 call generate_connectivity()
@@ -189,15 +189,15 @@ contains
                         end if
 
                         write(*,*) "iterations:", it, "residue:", residue
-                        write(301,*) it, residue
+                       ! write(301,*) it, residue
 
                         if(ieee_is_nan(residue))exit
         
-                        if(mod(it,nsave) == 0) then
-                                write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
-                                call device_to_host()
-                                call print_primal_output()
-                        end if
+                       ! if(mod(it,nsave) == 0) then
+                       !         write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+                       !         call device_to_host()
+                       !         call print_primal_output()
+                       ! end if
                 enddo
 
                 it = it - 1
@@ -208,9 +208,9 @@ contains
                 write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
                 write(*,*)
 
-                do i=1, max_points
-                        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
-                end do
+                !do i=1, max_points
+                !        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
+                !end do
 
                 istat = cudaDeviceSynchronize()
                 if (istat .ne. 0) then
@@ -222,9 +222,9 @@ contains
 
                 time = finish - start
 
-                CLOSE(UNIT=301)
-                CLOSE(UNIT=302)
-                CLOSE(UNIT=303)
+                !CLOSE(UNIT=301)
+                !CLOSE(UNIT=302)
+                !CLOSE(UNIT=303)
 
         end subroutine
 

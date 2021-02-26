@@ -98,13 +98,13 @@ program meshfree_solver
     call q_lskum(runtime)
     
     !       Compute sensor values
-    call compute_adapt_sensor()
+    !call compute_adapt_sensor()
     
     !       Objective function computation
-    call objective_function()
+    !call objective_function()
     
     !       Save solution one last time
-    call print_primal_output()
+    !call print_primal_output()
     
     !       Deallocate point/solution vectors
     call deallocate_soln()

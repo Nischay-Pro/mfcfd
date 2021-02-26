@@ -19,7 +19,7 @@ else()
 #------------------------------------------------------------------------------#
 # CUDA support
 #------------------------------------------------------------------------------#
-ENABLE_LANGUAGE(CUDA)
+#ENABLE_LANGUAGE(CUDA)
 include_directories(${CUDA_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CUDA_LIBRARIES})
 

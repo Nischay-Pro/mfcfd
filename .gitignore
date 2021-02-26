@@ -26,3 +26,5 @@ examples/mpi_adjoint/phi_values_split/*
 partGrid*
 phi_files/
 examples/cuda/phi_vector
+*.sh
+
