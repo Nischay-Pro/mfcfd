@@ -20,7 +20,7 @@ contains
             integer :: i
             ! shared
             real*8 :: qtilde(1)
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -63,7 +63,7 @@ contains
                 ! shared
                 integer :: threadid, blockd
                 real*8 :: qtilde(1)
-                real*8, shared :: share(1024)
+                real*8, shared :: share(2048)
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
@@ -97,7 +97,7 @@ contains
             integer :: i
             ! shared
             real*8 :: qtilde(1)
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -139,7 +139,7 @@ contains
             integer :: i
             real*8 :: qtilde(1)
             ! shared
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -176,7 +176,7 @@ contains
             integer :: i
             real*8 :: qtilde(1)
             ! shared
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -214,7 +214,7 @@ contains
             integer :: i
             real*8 :: qtilde(1)
             ! shared
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -252,7 +252,7 @@ contains
             integer :: i
             real*8 :: qtilde(1)
             ! shared
-            real*8, shared :: share(1024)
+            real*8, shared :: share(2048)
             integer :: threadid, blockd
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
