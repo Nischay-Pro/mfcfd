@@ -1340,19 +1340,19 @@ contains
                 integer :: threadid, blockd
                 real*8 :: beta, temp, temp1, temp2
                 real*8 :: u1, u2, pr, rho
-                real*8 :: qtilded(4)
+                real*8 :: qtilded(4), qd(4)
 
                 qtilded(:) = 1.0d0
+                qd(:) = q_d(:,k)
                 do r = 1, 4
-                        q = q_d(r,k)
-                        del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) - q
+                        del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) - qd(r)
                         if(dabs(del_neg) .gt. 10e-6) then
                                 if(del_neg .gt. 0.d0) then
                                         !call maximum(k, r, max_q, q_d, nbhs_d, conn_d)
-                                        del_pos = qm_d(1,r,k) - q
+                                        del_pos = qm_d(1,r,k) - qd(r)
                                 else if(del_neg .lt. 0.d0) then
                                         !call minimum(k, r, min_q, q_d, nbhs_d, conn_d)
-                                        del_pos = qm_d(2,r,k) - q
+                                        del_pos = qm_d(2,r,k) - qd(r)
                                 endif
 
                                 epsi = vl_d*dist_d(k)
@@ -1372,7 +1372,6 @@ contains
                                 endif
 
                         endif
-
                 enddo
 
                 phi1_d(1,k) = qtilded(1)
