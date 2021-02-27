@@ -1340,18 +1340,17 @@ contains
                 integer :: threadid, blockd
                 real*8 :: beta, temp, temp1, temp2
                 real*8 :: u1, u2, pr, rho
-                real*8 :: qtilded(4), qd(4), del_negd(4)
+                real*8 :: qtilded(4), qd(4)
 
                 qtilded(:) = 1.0d0
                 qd(:) = q_d(:,k)
-                del_negd(:) = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k)) - qd(:)
                 do r = 1, 4
-                        ! del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) - qd(r)
-                        if(dabs(del_negd(r)) .gt. 10e-6) then
-                                if(del_negd(r) .gt. 0.d0) then
+                        del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) - qd(r)
+                        if(dabs(del_neg) .gt. 10e-6) then
+                                if(del_neg .gt. 0.d0) then
                                         !call maximum(k, r, max_q, q_d, nbhs_d, conn_d)
                                         del_pos = qm_d(1,r,k) - qd(r)
-                                else if(del_negd(r) .lt. 0.d0) then
+                                else if(del_neg .lt. 0.d0) then
                                         !call minimum(k, r, min_q, q_d, nbhs_d, conn_d)
                                         del_pos = qm_d(2,r,k) - qd(r)
                                 endif
@@ -1360,11 +1359,11 @@ contains
                                 epsi = epsi**3.0d0
 
                                 num = (del_pos*del_pos) + (epsi*epsi)  ! Numerator .. 
-                                num = num*del_negd(r) + 2.0d0*del_negd(r)*del_negd(r)*del_pos
+                                num = num*del_neg + 2.0d0*del_neg*del_neg*del_pos
 
-                                den = del_pos*del_pos + 2.0d0*del_negd(r)*del_negd(r) ! Denominator ..
-                                den = den + del_negd(r)*del_pos + epsi*epsi
-                                den = den*del_negd(r)
+                                den = del_pos*del_pos + 2.0d0*del_neg*del_neg ! Denominator ..
+                                den = den + del_neg*del_pos + epsi*epsi
+                                den = den*del_neg
 
                                 temp = num/den
                                 
