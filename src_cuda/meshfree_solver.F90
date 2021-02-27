@@ -7,8 +7,8 @@ program meshfree_solver
     use initial_conditions_mod
     use q_lskum_mod
     use post_processing_mod
-    use objective_function_mod
-    use adaptation_sensors_mod
+    ! use objective_function_mod
+    ! use adaptation_sensors_mod
     
     
     implicit none

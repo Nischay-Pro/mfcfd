@@ -35,14 +35,14 @@ module compute_force_coeffs_mod
                                 r = point%right(m) 
                                 l = point%left(m) 
 
-                                lx = point%x(l)
-                                ly = point%y(l)
+                                lx = point%xy(1,l)
+                                ly = point%xy(2,l)
 
-                                mx = point%x(m)
-                                my = point%y(m)
+                                mx = point%xy(1,m)
+                                my = point%xy(2,m)
 
-                                rx = point%x(r)
-                                ry = point%y(r)
+                                rx = point%xy(1,r)
+                                ry = point%xy(2,r)
 
                                 ds1 = (mx - lx)**2 + (my - ly)**2
                                 ds1 = dsqrt(ds1)
@@ -52,13 +52,13 @@ module compute_force_coeffs_mod
 
                                 ds = 0.5d0*(ds1 + ds2)
 
-                                nx = point%nx(m)
-                                ny = point%ny(m)
+                                nx = point%nxy(1,m)
+                                ny = point%nxy(2,m)
 
                                 cp = point%prim(4,m) - pr_inf
                                 cp = -cp/temp
 
-                                write(201, *) point%flag_2(m), point%x(m), cp
+                                write(201, *) point%flag_2(m), point%xy(1,m), cp
 
                                 H(point%flag_2(m)) = H(point%flag_2(m)) + cp*nx*ds
                                 V(point%flag_2(m)) = V(point%flag_2(m)) + cp*ny*ds

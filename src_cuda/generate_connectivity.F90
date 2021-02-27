@@ -9,26 +9,26 @@ module generate_connectivity_mod
                 implicit none
 
                 integer :: i, k
-		real*8 :: nx, ny
+		    real*8 :: nx, ny
 
                 do k = 1, interior_points
                                         i = interior_points_index(k)
-                                        nx = point%nx(i)
-                                        ny = point%ny(i)
+                                        nx = point%nxy(1,i)
+                                        ny = point%nxy(2,i)
                                         call get_interior_neighbours(i, nx, ny)
                 enddo
 
                 do k = 1, wall_points
                                         i = wall_points_index(k)
-                                        nx = point%nx(i)
-                                        ny = point%ny(i)
+                                        nx = point%nxy(1,i)
+                                        ny = point%nxy(2,i)
                                         call get_wall_boundary_neighbours(i, nx, ny)
                 enddo
 
                 do k = 1, outer_points
                                         i = outer_points_index(k)
-                                        nx = point%nx(i)
-                                        ny = point%ny(i)
+                                        nx = point%nxy(1,i)
+                                        ny = point%nxy(2,i)
                                         call get_outer_boundary_neighbours(i, nx, ny)
                 enddo
 
@@ -43,8 +43,8 @@ module generate_connectivity_mod
 		real*8 :: nx, ny, tx, ty
                 integer :: i, r, count, nbh
 
-                xi = point%x(i)
-                yi = point%y(i)
+                xi = point%xy(1,i)
+                yi = point%xy(2,i)
 
                 tx = ny
                 ty = -nx
@@ -56,8 +56,8 @@ module generate_connectivity_mod
 
                 do r=1, point%nbhs(i)
                         nbh = point%conn(i,r)
-                        xk = point%x(nbh)
-                        yk = point%y(nbh)
+                        xk = point%xy(1,nbh)
+                        yk = point%xy(2,nbh)
                         
                         nbh = find_loc_f90(point%conn, 20, i, nbh)
 
@@ -131,8 +131,8 @@ module generate_connectivity_mod
                         integer :: i, r, count, nbh
         
         
-                        xi = point%x(i)
-                        yi = point%y(i)
+                        xi = point%xy(1,i)
+                        yi = point%xy(2,i)
         
                         tx = ny
                         ty = -nx
@@ -145,8 +145,8 @@ module generate_connectivity_mod
         
                                 nbh = point%conn(i,r)
         
-                                xk = point%x(nbh)
-                                yk = point%y(nbh)
+                                xk = point%xy(1,nbh)
+                                yk = point%xy(2,nbh)
 
                                 nbh = find_loc_f90(point%conn, 20, i, nbh)
 
@@ -206,8 +206,8 @@ module generate_connectivity_mod
                         integer :: i, r, count, nbh
         
         
-                        xi = point%x(i)
-                        yi = point%y(i)
+                        xi = point%xy(1,i)
+                        yi = point%xy(2,i)
         
                         tx = ny
                         ty = -nx
@@ -220,8 +220,8 @@ module generate_connectivity_mod
         
                                 nbh = point%conn(i,r)
         
-                                xk = point%x(nbh)
-                                yk = point%y(nbh)
+                                xk = point%xy(1,nbh)
+                                yk = point%xy(2,nbh)
 
                                 nbh = find_loc_f90(point%conn, 20, i, nbh)
 

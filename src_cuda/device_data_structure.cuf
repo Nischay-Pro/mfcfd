@@ -122,11 +122,9 @@ module device_data_structure_mod
                 qinf4_d = q_inf(4)
                 ! transfer from host to device(solution)
                 point_d%prim = point%prim
-                ! grid variables transfer
-                point_d%x(1,:) = point%x
-                point_d%x(2,:) = point%y
-                point_d%nx(1,:) = point%nx
-                point_d%nx(2,:) = point%ny
+                ! ! grid variables transfer
+                point_d%x = point%xy
+                point_d%nx = point%nxy
                 point_d%nbhs = point%nbhs
                 point_d%conn = point%conn
                 point_d%flag = point%flag_1

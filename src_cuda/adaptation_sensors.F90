@@ -55,8 +55,8 @@ module adaptation_sensors_mod
                         u2_i = point%prim(3,i)
                         rho_i = point%prim(1,i)
                         pr_i = point%prim(4,i)
-                        x_i = point%x(i)
-                        y_i = point%y(i)
+                        x_i = point%xy(1,i)
+                        y_i = point%xy(2,i)
 
                         maxi = 0.0
                         mini = 1.0e10
@@ -68,8 +68,8 @@ module adaptation_sensors_mod
                                 u2_j = point%prim(3,j)
                                 rho_j = point%prim(1,j)
                                 pr_j = point%prim(4,j)
-                                x_j = point%x(j)
-                                y_j = point%y(j)
+                                x_j = point%xy(1,j)
+                                y_j = point%xy(2,j)
 
                                 dist_ij = (x_j - x_i)**2 + (y_j - y_i)**2
 

@@ -26,7 +26,7 @@ contains
 
                         mach_number = dsqrt(vel_mag/sos)
 
-                        write(501,'(2e30.20,2i4,7e30.20)')point%x(i), point%y(i), point%flag_1(i), point%qtdepth(i),&
+                        write(501,'(2e30.20,2i4,7e30.20)')point%xy(1,i), point%xy(2,i), point%flag_1(i), point%qtdepth(i),&
                                 & point%prim(1,i),point%prim(2,i),point%prim(3,i),&
                                 & point%prim(4,i), mach_number, point%entropy(i), point%sensor(i)
                 end do

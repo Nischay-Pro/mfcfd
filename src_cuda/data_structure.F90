@@ -9,7 +9,7 @@ module data_structure_mod
 
         type :: points
 
-		real*8, dimension(:), allocatable :: x,y
+		real*8, dimension(:,:), allocatable :: xy
                 integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
@@ -18,7 +18,7 @@ module data_structure_mod
                 
                 integer, dimension(:), allocatable :: qtdepth
 
-		real*8, dimension(:), allocatable :: nx, ny
+        real*8, dimension(:,:), allocatable :: nxy
 
 		real*8, dimension(:), allocatable :: min_dist
 

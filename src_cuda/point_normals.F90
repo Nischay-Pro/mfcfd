@@ -24,14 +24,14 @@ module point_normals_mod
                         l = point%left(m)
                         r = point%right(m)
                         
-                        lx = point%x(l)
-                        ly = point%y(l)
+                        lx = point%xy(1,l)
+                        ly = point%xy(2,l)
 
-                        mx = point%x(m)
-                        my = point%y(m)
+                        mx = point%xy(1,m)
+                        my = point%xy(2,m)
 
-                        rx = point%x(r)
-                        ry = point%y(r)
+                        rx = point%xy(1,r)
+                        ry = point%xy(2,r)
 
                         nx1 = my - ly
                         nx2 = ry - my
@@ -47,8 +47,8 @@ module point_normals_mod
                         nx = -nx/det
                         ny = ny/det
 
-                        point%nx(m) = nx
-                        point%ny(m) = ny
+                        point%nxy(1,m) = nx
+                        point%nxy(2,m) = ny
 
                 enddo
                                 
@@ -61,14 +61,14 @@ module point_normals_mod
                         l = point%left(m)
                         r = point%right(m)
 
-                        lx = point%x(l)
-                        ly = point%y(l)
+                        lx = point%xy(1,l)
+                        ly = point%xy(2,l)
 
-                        mx = point%x(m)
-                        my = point%y(m)
+                        mx = point%xy(1,m)
+                        my = point%xy(2,m)
 
-                        rx = point%x(r)
-                        ry = point%y(r)
+                        rx = point%xy(1,r)
+                        ry = point%xy(2,r)
    
                         nx1 = my - ly
                         nx2 = ry - my
@@ -84,27 +84,25 @@ module point_normals_mod
                         nx = -nx/det
                         ny = ny/det
 
-                        point%nx(m) = nx
-                        point%ny(m) = ny
+                        point%nxy(1,m) = nx
+                        point%nxy(2,m) = ny
 
                 enddo
 
                 if(interior_points_normal_flag == 0 .and. format_file .ne. 'quadtree') then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
-                                point%nx(k) = 0.d0
-                                point%ny(k) = 1.d0
+                                point%nxy(1,k) = 0.d0
+                                point%nxy(2,k) = 1.d0
                         enddo
                 elseif(interior_points_normal_flag == 1 .and. format_file .ne. 'quadtree') then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
-                                point%nx(k) = 1.d0
-                                point%ny(k) = 0.d0
+                                point%nxy(1,k) = 1.d0
+                                point%nxy(2,k) = 0.d0
                         enddo
                 endif
 
         end subroutine 
 
 end module 
-
-
