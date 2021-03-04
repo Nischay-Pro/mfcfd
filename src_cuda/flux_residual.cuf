@@ -6,12 +6,12 @@ contains
 
         attributes(global) subroutine cal_flux_residual1(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
             & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
 
             implicit none
 
             ! device variables
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
             integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
             integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
@@ -32,30 +32,30 @@ contains
             
             if (flag_d(i) == 0) then
                 call wall_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                        & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                        & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
                 call wall_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                        & xneg_conn_d, dist_d, q_d, qm_d, dq_d,  phi1_d, i)
+                        & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
                 call wall_dGy_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                        & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                        & yneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
                     
             else if (flag_d(i) == 2) then
                 call outer_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                        & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                        & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
                 call outer_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                        & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)  
+                        & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)  
                 call outer_dGy_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                        & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                        & ypos_conn_d, dist_d, q_d, qm_d, dq_d, i)
             end if
     
         end subroutine
     
         attributes(global) subroutine cal_flux_residual2(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-            & xpos_nbhs_d, xpos_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xpos_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
 
             implicit none
 
             ! device variables
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
             integer :: xpos_nbhs_d(:)
             integer*1:: xpos_conn_d(:,:)
@@ -77,19 +77,19 @@ contains
 
             if (flag_d(i) == 1) then
                     call interior_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
                     
             end if
     
         end subroutine
     
         attributes(global) subroutine cal_flux_residual3(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-            & xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+            & xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
 
             implicit none
 
             ! device variables
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
             integer :: xneg_nbhs_d(:)
             integer*1:: xneg_conn_d(:,:)
@@ -111,7 +111,7 @@ contains
 
             if (flag_d(i) == 1) then
                     call interior_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
         
                     
             end if
@@ -119,12 +119,12 @@ contains
         end subroutine
     
         attributes(global) subroutine cal_flux_residual4(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-            & ypos_nbhs_d, ypos_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+            & ypos_nbhs_d, ypos_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
 
             implicit none
 
             ! device variables
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
             integer :: ypos_nbhs_d(:)
             integer*1:: ypos_conn_d(:,:)
@@ -146,19 +146,19 @@ contains
 
             if (flag_d(i) == 1) then
                     call interior_dGy_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             end if
     
         end subroutine
     
         attributes(global) subroutine cal_flux_residual5(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-            & yneg_nbhs_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+            & yneg_nbhs_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
 
             implicit none
 
             ! device variables
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
             integer :: yneg_nbhs_d(:)
             integer*1:: yneg_conn_d(:,:)
@@ -180,18 +180,18 @@ contains
 
             if (flag_d(i) == 1) then
                     call interior_dGy_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
                     
             end if
 
         end subroutine
         
         attributes(device) subroutine wall_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: xpos_nbhs_d(:)
             integer*1 :: xpos_conn_d(:,:)
@@ -265,10 +265,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GxII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GxII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -291,11 +291,11 @@ contains
         end subroutine
 
         attributes(device) subroutine wall_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d,  phi1_d, i)
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer*1 :: xneg_conn_d(:,:)
@@ -369,10 +369,10 @@ contains
                         share(threadid + blockd * 2) = 0.0d0
                         share(threadid + blockd * 3) = 0.0d0
 
-                        call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                        call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                         call flux_quad_GxI(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                         
-                        call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                        call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                         call flux_quad_GxI(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
 
@@ -395,11 +395,11 @@ contains
         end subroutine
 
         attributes(device) subroutine wall_dGy_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: yneg_nbhs_d(:)
             integer*1 :: yneg_conn_d(:,:)
@@ -474,10 +474,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
 
@@ -501,11 +501,11 @@ contains
         end subroutine
 
         attributes(device) subroutine outer_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: xpos_nbhs_d(:)
             integer*1 :: xpos_conn_d(:,:)
@@ -580,10 +580,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GXIII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GXIII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
 
@@ -607,11 +607,11 @@ contains
         end subroutine
 
         attributes(device) subroutine outer_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: xneg_nbhs_d(:)
             integer*1 :: xneg_conn_d(:,:)
@@ -686,10 +686,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GXIV(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_quad_GXIV(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -712,11 +712,11 @@ contains
         end subroutine
 
         attributes(device) subroutine outer_dGy_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: ypos_nbhs_d(:)
             integer*1 :: ypos_conn_d(:,:)
@@ -791,10 +791,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -817,11 +817,11 @@ contains
         end subroutine
 
         attributes(device) subroutine interior_dGx_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: xpos_nbhs_d(:)
             integer*1 :: xpos_conn_d(:,:)
@@ -896,10 +896,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gxp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gxp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -922,11 +922,11 @@ contains
         end subroutine
 
         attributes(device) subroutine interior_dGx_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: xneg_nbhs_d(:)
             integer*1 :: xneg_conn_d(:,:)
@@ -1001,10 +1001,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gxn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gxn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -1027,11 +1027,11 @@ contains
         end subroutine
 
         attributes(device) subroutine interior_dGy_pos(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: ypos_nbhs_d(:)
             integer*1 :: ypos_conn_d(:,:)
@@ -1106,10 +1106,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
                     
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -1132,11 +1132,11 @@ contains
         end subroutine
 
         attributes(device) subroutine interior_dGy_neg(flux_res_d, share,  x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, i)
 
             ! device variables
             integer :: i
-            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
             integer :: nbhs_d(:), conn_d(:,:)
             integer :: yneg_nbhs_d(:)
             integer*1 :: yneg_conn_d(:,:)
@@ -1211,10 +1211,10 @@ contains
                     share(threadid + blockd * 2) = 0.0d0
                     share(threadid + blockd * 3) = 0.0d0
 
-                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                     
-                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
                     call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
                     sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
@@ -1236,12 +1236,12 @@ contains
    
         end subroutine
 
-        attributes(device) subroutine venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+        attributes(device) subroutine venkat_limiter( share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d)
 
                 implicit none
 
                 ! device variables
-                real*8 :: q_d(:,:), x_d(:,:), dist_d(:), dq_d(:,:,:), qm_d(:,:,:), phi1_d(:,:)
+                real*8 :: q_d(:,:), x_d(:,:), dist_d(:), dq_d(:,:,:), qm_d(:,:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 ! local variables
                 integer :: r, k, i
@@ -1287,12 +1287,7 @@ contains
                         endif
                 enddo
 
-                phi1_d(1,k) = qtilded(1)
-                phi1_d(2,k) = qtilded(2)
-                phi1_d(3,k) = qtilded(3)
-                phi1_d(4,k) = qtilded(4)
-                        
-                qtilded(:) = q_d(:,k) - 0.5d0*phi1_d(:,k)*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                qtilded(:) = q_d(:,k) - 0.5d0*qtilded(:)*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 
                 beta = -qtilded(4)*0.5d0
 
