@@ -115,12 +115,12 @@ contains
 
         end subroutine
 
-        attributes(global) subroutine eval_q_inner_loop(x_d, nbhs_d, conn_d, q_d, dq_d, ddq_d, inner_d)
+        attributes(global) subroutine eval_q_inner_loop(x_d, nbhs_d, conn_d, q_d, dq_d, ddq_d, inner1_d, inner2_d)
 
                 implicit none
 
                 ! device variables
-                real*8 :: q_d(:,:), dq_d(:,:,:), ddq_d(:,:,:), inner_d(:,:)
+                real*8 :: q_d(:,:), dq_d(:,:,:), ddq_d(:,:,:), inner1_d(:,:), inner2_d(:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 real*8 :: x_d(:,:)
                 ! local variables
@@ -208,24 +208,24 @@ contains
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                 one_by_det = 1.0d0/det
 
-                inner_d(1,i) = one_by_det * (sum_delx_delq1 * sum_dely_sqr - sum_dely_delq1 * sum_delx_dely)
-                inner_d(2,i) = one_by_det * (sum_delx_delq2 * sum_dely_sqr - sum_dely_delq2 * sum_delx_dely)
-                inner_d(3,i) = one_by_det * (sum_delx_delq3 * sum_dely_sqr - sum_dely_delq3 * sum_delx_dely)
-                inner_d(4,i) = one_by_det * (sum_delx_delq4 * sum_dely_sqr - sum_dely_delq4 * sum_delx_dely)
+                inner1_d(1,i) = one_by_det * (sum_delx_delq1 * sum_dely_sqr - sum_dely_delq1 * sum_delx_dely)
+                inner1_d(2,i) = one_by_det * (sum_delx_delq2 * sum_dely_sqr - sum_dely_delq2 * sum_delx_dely)
+                inner1_d(3,i) = one_by_det * (sum_delx_delq3 * sum_dely_sqr - sum_dely_delq3 * sum_delx_dely)
+                inner1_d(4,i) = one_by_det * (sum_delx_delq4 * sum_dely_sqr - sum_dely_delq4 * sum_delx_dely)
                 
-                inner_d(5,i) = one_by_det * (sum_dely_delq1 * sum_delx_sqr - sum_delx_delq1 * sum_delx_dely)
-                inner_d(6,i) = one_by_det * (sum_dely_delq2 * sum_delx_sqr - sum_delx_delq2 * sum_delx_dely)
-                inner_d(7,i) = one_by_det * (sum_dely_delq3 * sum_delx_sqr - sum_delx_delq3 * sum_delx_dely)
-                inner_d(8,i) = one_by_det * (sum_dely_delq4 * sum_delx_sqr - sum_delx_delq4 * sum_delx_dely)
+                inner2_d(1,i) = one_by_det * (sum_dely_delq1 * sum_delx_sqr - sum_delx_delq1 * sum_delx_dely)
+                inner2_d(2,i) = one_by_det * (sum_dely_delq2 * sum_delx_sqr - sum_delx_delq2 * sum_delx_dely)
+                inner2_d(3,i) = one_by_det * (sum_dely_delq3 * sum_delx_sqr - sum_delx_delq3 * sum_delx_dely)
+                inner2_d(4,i) = one_by_det * (sum_dely_delq4 * sum_delx_sqr - sum_delx_delq4 * sum_delx_dely)
 
         end subroutine
 
-        attributes(global) subroutine eval_update_innerloop(dq_d, inner_d)
+        attributes(global) subroutine eval_update_innerloop(dq_d, inner1_d, inner2_d)
 
                 implicit none
 
                 ! device variables
-                real*8 :: dq_d(:,:,:), inner_d(:,:)
+                real*8 :: dq_d(:,:,:), inner1_d(:,:), inner2_d(:,:)
 
                 integer :: i
 
@@ -233,8 +233,8 @@ contains
 
                 if(i > mp_d) return
 
-                dq_d(1,:,i) = inner_d(1:4,i)
-                dq_d(2,:,i) = inner_d(5:8,i)
+                dq_d(1,:,i) = inner1_d(:,i)
+                dq_d(2,:,i) = inner2_d(:,i)
 
 
         end subroutine
