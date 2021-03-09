@@ -7,23 +7,20 @@ ENABLE_LANGUAGE(C)
 ENABLE_LANGUAGE(CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-if( NOT "${MFCFD}" MATCHES "CUDA" )
 #------------------------------------------------------------------------------#
 # PETSc support
 #------------------------------------------------------------------------------#
 find_package(PETSc REQUIRED)
+#set(PETSC_INCLUDES ${PETSC_INCLUDES} /opt/spack/opt/spack/linux-centos8-broadwell/gcc-10.2.0/petsc-3.14.4-joqchrhnfborowtfv3q3paqycs3whv73)
 include_directories(${PETSC_INCLUDES})
 set(LIBS ${LIBS} ${PETSC_LIBRARIES})
 
-else()
 #------------------------------------------------------------------------------#
 # CUDA support
 #------------------------------------------------------------------------------#
-#ENABLE_LANGUAGE(CUDA)
+ENABLE_LANGUAGE(CUDA)
 include_directories(${CUDA_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CUDA_LIBRARIES})
-
-endif()
 
 #------------------------------------------------------------------------------#
 # HDF5 support
@@ -33,7 +30,23 @@ link_directories( ${HDF5_LIBRARY_DIRS})
 include_directories(${HDF5_Fortran_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${HDF5_Fortran_LIBRARIES})
 
-if( "${MFCFD}" MATCHES "SERIAL" )
+if( "${MFCFD}" MATCHES "PRIMAL" )
+message("Building Primal MeshFree Solver")
+#add_compile_options(-Mcuda=nordc,lineinfo -Mcuda=keepptx,ptxinfo)
+FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_primal/*.F90")
+SET(MFCFD_CUDA_SOURCES ${CMAKE_SOURCE_DIR}/src_primal/device_data_structure.cuf)
+file(WRITE cuda.F90.in "")
+foreach(MFCFD_CUDA_FILE ${MFCFD_CUDA_SOURCES})
+  file(READ ${MFCFD_CUDA_FILE} CONTENTS)
+  file(APPEND cuda.F90.in "${CONTENTS}")
+endforeach()
+configure_file(cuda.F90.in cuda.F90 COPYONLY)
+set(CUDA_SEPARABLE_COMPILATION ON)
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Mcuda=nordc,lineinfo -lcublas -Minfo")
+add_executable(execname ${MFCFD_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/cuda.F90)
+target_link_libraries(execname ${CUDA_cusparse_LIBRARY} ${LIBS})
+
+elseif( "${MFCFD}" MATCHES "SERIAL" )
 message("Building Serial MeshFree Solver")
 add_compile_options(-march=native -O3 -ffree-line-length-512)
 FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_serial/*.F90")

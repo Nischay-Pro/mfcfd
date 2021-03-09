@@ -22,7 +22,7 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 
-cmake_policy(VERSION 3.3)
+cmake_policy(VERSION 2.8)
 
 set(PETSC_VALID_COMPONENTS
   C
@@ -30,10 +30,11 @@ set(PETSC_VALID_COMPONENTS
 
 if(NOT PETSc_FIND_COMPONENTS)
   get_property (_enabled_langs GLOBAL PROPERTY ENABLED_LANGUAGES)
-  if ("C" IN_LIST _enabled_langs)
-    set(PETSC_LANGUAGE_BINDINGS "C")
-  else ()
+  list (FIND _enabled_langs "CXX" _cxx_lang_index)
+  if (${_cxx_lang_index} GREATER -1)
     set(PETSC_LANGUAGE_BINDINGS "CXX")
+  else ()
+    set(PETSC_LANGUAGE_BINDINGS "C")
   endif ()
 else()
   # Right now, this is designed for compatability with the --with-clanguage option, so
@@ -278,11 +279,81 @@ int main(int argc,char *argv[]) {
   return 0;
 }
 ")
-    multipass_source_runs ("${includes}" "${libraries}" "${_PETSC_TEST_SOURCE}" ${runs} "${PETSC_LANGUAGE_BINDINGS}")
-    if (${${runs}})
-      set (PETSC_EXECUTABLE_RUNS "YES" CACHE BOOL
-        "Can the system successfully run a PETSc executable?  This variable can be manually set to \"YES\" to force CMake to accept a given PETSc configuration, but this will almost always result in a broken build.  If you change PETSC_DIR, PETSC_ARCH, or PETSC_CURRENT you would have to reset this variable." FORCE)
-    endif (${${runs}})
+
+    set (includes_all ${includes})
+    set (libraries_all ${libraries})
+    set (flags_all "")
+    set (definitions_all "")
+
+    if (MPI_FOUND)
+        if(NOT "${MPI_INCLUDE_PATH}" STREQUAL "")
+            list (APPEND includes_all ${MPI_INCLUDE_PATH})
+        endif()
+
+        if ("${PETSC_LANGUAGE_BINDINGS}" STREQUAL "C")
+            if(MPI_C_DEFINITIONS)
+                set(definitions_all "${definitions_all} ${MPI_C_DEFINITIONS}")
+            endif()
+
+            if(MPI_C_COMPILE_OPTIONS)
+                set(flags_all "${flags_all} ${MPI_C_COMPILE_OPTIONS}")
+            endif()
+
+            if(MPI_C_LINK_FLAGS)
+                set(flags_all "${flags_all} ${MPI_C_LINK_FLAGS}")
+            endif()
+
+            if(MPI_C_INCLUDE_PATH)
+                list (APPEND includes_all ${MPI_C_INCLUDE_PATH})
+            endif()
+
+            list (APPEND libraries_all "${MPI_C_LIBRARIES}")
+        endif()
+
+        if ("${PETSC_LANGUAGE_BINDINGS}" STREQUAL "CXX")
+            if(MPI_CXX_DEFINITIONS)
+                set(definitions_all "${definitions_all} ${MPI_CXX_DEFINITIONS}")
+            endif()
+
+            if(MPI_CXX_COMPILE_OPTIONS)
+                set(flags_all "${flags_all} ${MPI_CXX_COMPILE_OPTIONS}")
+            endif()
+
+            if(MPI_CXX_LINK_FLAGS)
+                set(flags_all "${flags_all} ${MPI_CXX_LINK_FLAGS}")
+            endif()
+
+            if(MPI_CXX_INCLUDE_PATH)
+                list (APPEND includes_all ${MPI_CXX_INCLUDE_PATH})
+            endif()
+
+            list (APPEND libraries_all "${MPI_CXX_LIBRARIES}")
+        endif()
+
+        get_property (_enabled_langs GLOBAL PROPERTY ENABLED_LANGUAGES)
+        list (FIND _enabled_langs "Fortran" _fortran_lang_index)
+        if (${_fortran_lang_index} GREATER -1)
+            if(MPI_Fortran_DEFINITIONS)
+                set(definitions_all "${definitions_all} ${MPI_Fortran_DEFINITIONS}")
+            endif()
+
+            if(MPI_Fortran_COMPILE_OPTIONS)
+                set(flags_all "${flags_all} ${MPI_Fortran_COMPILE_OPTIONS}")
+            endif()
+
+            if(MPI_Fortran_LINK_FLAGS)
+                set(flags_all "${flags_all} ${MPI_Fortran_LINK_FLAGS}")
+            endif()
+
+            if(MPI_Fortran_INCLUDE_PATH)
+                list (APPEND includes_all ${MPI_Fortran_INCLUDE_PATH})
+            endif()
+
+            list (APPEND libraries_all "${MPI_Fortran_LIBRARIES}")
+        endif()
+    endif()
+
+    multipass_source_runs ("${includes_all}" "${libraries_all}" "${flags_all}" "${definitions_all}" "${_PETSC_TEST_SOURCE}" ${runs} "${PETSC_LANGUAGE_BINDINGS}")
   endmacro (PETSC_TEST_RUNS)
 
 
@@ -336,11 +407,11 @@ int main(int argc,char *argv[]) {
   # Note that we have forced values for all these choices.  If you
   # change these, you are telling the system to trust you that they
   # work.  It is likely that you will end up with a broken build.
-  mark_as_advanced (PETSC_INCLUDES PETSC_LIBRARIES PETSC_COMPILER PETSC_DEFINITIONS PETSC_MPIEXEC PETSC_EXECUTABLE_RUNS)
+  mark_as_advanced (PETSC_INCLUDES PETSC_LIBRARIES PETSC_COMPILER PETSC_DEFINITIONS PETSC_MPIEXEC)
 endif ()
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (PETSc
-  REQUIRED_VARS PETSC_INCLUDES PETSC_LIBRARIES PETSC_EXECUTABLE_RUNS
+  REQUIRED_VARS PETSC_INCLUDES PETSC_LIBRARIES
   VERSION_VAR PETSC_VERSION
   FAIL_MESSAGE "PETSc could not be found.  Be sure to set PETSC_DIR and PETSC_ARCH.")
