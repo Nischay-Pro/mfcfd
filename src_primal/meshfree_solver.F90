@@ -30,12 +30,16 @@ program meshfree_solver
         
         totaltime = MPI_Wtime()
 
+
         if(rank == 0) then
             write(*,*)
             write(*,*)'%%%%%%%%-CUDA Fortran Meshfree Code-%%%%%%%'
             write(*,*)
             write(*,*)'%%%%%%%%%%%%%%%-Device info-%%%%%%%%%%%%%%%'
-            istat = cudaGetDeviceCount ( nDevices )
+        end if
+
+        istat = cudaGetDeviceCount ( nDevices )
+        if(rank == 0) then
             do i = 0, nDevices - 1
                 istat = cudaGetDeviceProperties(prop, i)
                 write(*,*)'Device Name:               ', trim(prop%name)
@@ -50,13 +54,14 @@ program meshfree_solver
             if (nDevices .lt. 1) then
                 write(*,*) 'ERROR: There are no devices available on this host.  ABORTING.'
             endif
-            
-            istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferShared)
-            if (istat /= 0) then
-               print *, 'main: error setting cudaFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
-               stop
-            endif
         end if
+        istat = cudaSetDevice(rank)
+        istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferNone)
+        if (istat /= 0) then
+           print *, 'main: error setting cudaFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
+           stop
+        endif
+
 
 !       Read the case file
 
