@@ -29,8 +29,8 @@ contains
 
         do i = 1, local_points
             write(501,'(3i8,6e30.20)')point%original_id(i), &
-                & point%flag_1(i),point%flag_2(i),point%x(i), &
-                & point%y(i),point%prim(1,i),point%prim(2,i),point%prim(3,i), &
+                & point%flag_1(i),point%flag_2(i),point%xy(1,i), &
+                & point%xy(1,i),point%prim(1,i),point%prim(2,i),point%prim(3,i), &
                 & point%prim(4,i)
         end do
 

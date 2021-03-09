@@ -26,8 +26,8 @@ module compute_enstrophy_mod
             do i = 1, local_points
             
 
-                x_i = point%x(i)
-                y_i = point%y(i)
+                x_i = point%xy(1,i)
+                y_i = point%xy(2,i)
 
                 sum_delx_sqr = 0.d0
                 sum_dely_sqr = 0.d0
@@ -42,8 +42,8 @@ module compute_enstrophy_mod
 
                     nbh = point%conn(i,k)
 
-                    x_k = point%x(nbh)
-                    y_k = point%y(nbh)
+                    x_k = point%xy(1,nbh)
+                    y_k = point%xy(2,nbh)
 
                     delx = x_k - x_i
                     dely = y_k - y_i

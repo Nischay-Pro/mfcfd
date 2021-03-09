@@ -18,7 +18,7 @@ module q_lskum_mod
 
 contains
 
-        subroutine q_lskum(time)
+        subroutine q_lskum()
 
                 implicit none
 
@@ -27,7 +27,7 @@ contains
                 integer :: istat
                 integer :: i
                 integer :: rk, blockDim
-                real*8 :: start, finish, time
+                real*8 :: start, finish
 
                 !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
@@ -35,16 +35,21 @@ contains
 
                 call compute_normals()
                 call generate_connectivity()
-                write(*,*)'%%%%-Normals and connectivity generated-%%%'
-                write(*,*)
+                if(rank == 0) then
+                    write(*,*)
+                    write(*,*)'%%%%-Normals and connectivity generated-%%%'
+                    write(*,*)
+                end if
 
-                call cpu_time(start)
+                ! call cpu_time(start)
 
                 ! Transfer from host device
                 call host_to_device()
                 
-                write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
-                write(*,*)
+                if(rank == 0) then
+                    write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
+                    write(*,*)
+                end if
 
                 allocate(sum_res_sqr_d(max_points))
 
@@ -52,14 +57,17 @@ contains
                 grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
                 blockDim = blockx*blocky*blockz
                 
-                write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%'
-                write(*,*) 'number of threads per block:', blockDim
-                write(*,*) 'grid dimension:',grid
-                write(*,*) 'thread block dimension:',tBlock
+                if(rank == 0) then
+                    write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%'
+                    write(*,*) 'number of threads per block:', blockDim
+                    write(*,*) 'grid dimension:',grid
+                    write(*,*) 'thread block dimension:',tBlock
+                end if
 
-                write(*,*)
-                write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-                write(*,*)
+                if(rank == 0) then
+                    write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+                    write(*,*)
+                end if
 
                 if(solution_restart == 0) itr = 0
 
@@ -151,8 +159,9 @@ contains
                         else
                                 residue = dlog10(residue/res_old)
                         end if
-
-                        write(*,*) "iterations:", it, "residue:", residue
+                        if(rank == 0) then
+                            write(*,*) "iterations:", it, "residue:", residue
+                        end if
                        ! write(301,*) it, residue
 
                         if(ieee_is_nan(residue))exit
@@ -168,10 +177,11 @@ contains
                 
                 call device_to_host()
 
-                write(*,*)
-                write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
-                write(*,*)
-
+                if(rank == 0) then
+                    write(*,*)
+                    write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
+                    write(*,*)
+                end if
                 !do i=1, max_points
                 !        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
                 !end do
@@ -182,9 +192,9 @@ contains
                         stop istat 
                 endif
 
-                call cpu_time(finish)
+                ! call cpu_time(finish)
 
-                time = finish - start
+                ! time = finish - start
 
                 !CLOSE(UNIT=301)
                 !CLOSE(UNIT=302)

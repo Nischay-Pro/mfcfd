@@ -104,46 +104,46 @@ module device_data_structure_mod
 
         end subroutine
 
-        ! subroutine host_to_device()
-        !         implicit none
+        subroutine host_to_device()
+                implicit none
 
-        !         ! set constant point info on device
-        !         mp_d = max_points
-        !         cfl_d = cfl
-        !         power_d = power
-        !         vl_d = vl_const
-        !         eu_d = euler
-        !         gamma_d = gamma
-        !         mach_d = mach
-        !         qinf1_d = q_inf(1)
-        !         qinf2_d = q_inf(2)
-        !         qinf3_d = q_inf(3)
-        !         qinf4_d = q_inf(4)
-        !         ! transfer from host to device(solution)
-        !         point_d%prim = point%prim
-        !         ! ! grid variables transfer
-        !         point_d%x = point%xy
-        !         point_d%nx = point%nxy
-        !         point_d%nbhs = point%nbhs
-        !         point_d%conn = point%conn
-        !         point_d%flag = point%flag_1
-        !         point_d%min_dist = point%min_dist
-        !         point_d%xpos_nbhs = point%xpos_nbhs
-        !         point_d%xneg_nbhs = point%xneg_nbhs
-        !         point_d%ypos_nbhs = point%ypos_nbhs
-        !         point_d%yneg_nbhs = point%yneg_nbhs
-        !         point_d%xpos_conn = point%xpos_conn
-        !         point_d%xneg_conn = point%xneg_conn
-        !         point_d%ypos_conn = point%ypos_conn
-        !         point_d%yneg_conn = point%yneg_conn
+                ! set constant point info on device
+                mp_d = max_points
+                cfl_d = cfl
+                power_d = power
+                vl_d = vl_const
+                eu_d = euler
+                gamma_d = gamma
+                mach_d = mach
+                qinf1_d = q_inf(1)
+                qinf2_d = q_inf(2)
+                qinf3_d = q_inf(3)
+                qinf4_d = q_inf(4)
+                ! transfer from host to device(solution)
+                point_d%prim = point%prim
+                ! ! grid variables transfer
+                point_d%x = point%xy
+                point_d%nx = point%nxy
+                point_d%nbhs = point%nbhs
+                point_d%conn = point%conn
+                point_d%flag = point%flag_1
+                point_d%min_dist = point%min_dist
+                point_d%xpos_nbhs = point%xpos_nbhs
+                point_d%xneg_nbhs = point%xneg_nbhs
+                point_d%ypos_nbhs = point%ypos_nbhs
+                point_d%yneg_nbhs = point%yneg_nbhs
+                point_d%xpos_conn = point%xpos_conn
+                point_d%xneg_conn = point%xneg_conn
+                point_d%ypos_conn = point%ypos_conn
+                point_d%yneg_conn = point%yneg_conn
 
-        ! end subroutine
+        end subroutine
 
-        ! subroutine device_to_host()
-        !         implicit none
+        subroutine device_to_host()
+                implicit none
 
-        !         point%prim    = point_d%prim
+                point%prim    = point_d%prim
 
-        ! end subroutine
+        end subroutine
 
 end module device_data_structure_mod

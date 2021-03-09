@@ -2,17 +2,21 @@ program meshfree_solver
 
 #include <petsc/finclude/petscsys.h>
 
-
         use petscsys
+        use cudafor
         use parameter_mod
         use data_structure_mod
         use petsc_data_structure_mod
         use point_preprocessor_mod
+        use initial_conditions_mod
         use q_lskum_mod
-        use compute_force_coeffs_mod
 
         implicit none
-        real*8  :: totaltime,runtime
+        integer :: istat, i, j, nDevices=0
+        integer :: accessPeer1, accessPeer2
+        real*8  :: start,finish, runtime
+        type(cudaDeviceProp) :: prop
+        real*8  :: totaltime
         PetscErrorCode  :: ierr
 
         call PetscInitialize('case.in', ierr)
@@ -27,9 +31,31 @@ program meshfree_solver
         totaltime = MPI_Wtime()
 
         if(rank == 0) then
+            write(*,*)
+            write(*,*)'%%%%%%%%-CUDA Fortran Meshfree Code-%%%%%%%'
+            write(*,*)
+            write(*,*)'%%%%%%%%%%%%%%%-Device info-%%%%%%%%%%%%%%%'
+            istat = cudaGetDeviceCount ( nDevices )
+            do i = 0, nDevices - 1
+                istat = cudaGetDeviceProperties(prop, i)
+                write(*,*)'Device Name:               ', trim(prop%name)
+                write(*,*)'Compute Capability:        ',prop%major, prop%minor
+                write(*,*)'Device number:             ',i
+                write(*,*)'MemoryClockRate(KHz):      ',prop%memoryBusWidth
+                write(*,*)'PeakMemoryBandwidth(GB/s): ',2.0 *prop%memoryClockRate * &
+                & (prop%memoryBusWidth/8) * 1.e-6
                 write(*,*)
-                write(*,*)'%%%%%%%%%%%%%-MPI Meshfree Code-%%%%%%%%%%%'
-                write(*,*)
+            end do
+            
+            if (nDevices .lt. 1) then
+                write(*,*) 'ERROR: There are no devices available on this host.  ABORTING.'
+            endif
+            
+            istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferShared)
+            if (istat /= 0) then
+               print *, 'main: error setting cudaFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
+               stop
+            endif
         end if
 
 !       Read the case file
@@ -56,7 +82,7 @@ program meshfree_solver
 !       Allocate solution variables
 
         call allocate_soln()
-
+        call allocate_device_soln()
 !       Initialize Petsc vectors
 
         if(proc .ne. 1)call init_petsc()
@@ -80,7 +106,7 @@ program meshfree_solver
                         write(*,*)'%%%%%%%%%-Using inbuilt solvers-%%%%%%%%%%%'
                         write(*,*)
                 end if
-                ! call q_lskum()
+                call q_lskum()
         end if
         runtime = MPI_Wtime() - runtime
 
@@ -91,6 +117,7 @@ program meshfree_solver
 !       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()
         call deallocate_soln()
+        call deallocate_device_soln()
         call dealloc_points()
 
         totaltime = MPI_Wtime() - totaltime
