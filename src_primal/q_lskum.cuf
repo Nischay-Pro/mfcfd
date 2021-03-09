@@ -11,8 +11,6 @@ module q_lskum_mod
         use cudafor
         use ieee_arithmetic
 
-
-        real*8 :: sum_res_sqr, residue
         real*8, device :: temp
         real*8, device, allocatable :: sum_res_sqr_d(:)
 
@@ -28,6 +26,7 @@ contains
                 integer :: i
                 integer :: rk, blockDim
                 real*8 :: start, finish
+                real*8 :: sum_res_sqr, residue
 
                 !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
@@ -85,12 +84,25 @@ contains
                                 call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                         & point_d%conn, point_d%q, point_d%qm, point_d%dq)
 
+                                call dq_device_to_host()
+                                call qm_device_to_host()
+                                call update_begin_dq_ghost()
+                                call update_begin_qm_ghost()
+                                call update_end_dq_ghost()
+                                call update_end_qm_ghost()
+                                call dq_host_to_device()
+                                call qm_host_to_device()
+
                                 do i = 1, inner_iterations
 
                                         call eval_q_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                                 & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner1, point_d%inner2)
 
                                         call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner1, point_d%inner2)
+                                        call dq_device_to_host()
+                                        call update_begin_dq_ghost()
+                                        call update_end_dq_ghost()
+                                        call dq_host_to_device()
                                 end do
 
                                 call cal_flux_residual1<<<grid, tBlock>>>(point_d%x, point_d%nx, &
@@ -119,8 +131,10 @@ contains
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
-
-
+                                call prim_device_to_host()
+                                call update_begin_prim_ghost()
+                                call update_end_prim_ghost()
+                                call prim_host_to_device()
                         end do
 
                         istat = cudaGetLastError() 
@@ -175,7 +189,7 @@ contains
 
                 it = it - 1
                 
-                call device_to_host()
+                call prim_device_to_host()
 
                 if(rank == 0) then
                     write(*,*)

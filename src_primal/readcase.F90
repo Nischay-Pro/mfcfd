@@ -109,9 +109,9 @@ subroutine readcase()
                   '-solution_accuracy',solution_accuracy,set,ierr); CHKERRQ(ierr)
     
     if(trim(solution_accuracy) == 'second') then
-        fo_flag = 1.0d0
+        f_o_flag = 1.0d0
     elseif(trim(solution_accuracy) == 'first') then
-        fo_flag = 0.0d0
+        f_o_flag = 0.0d0
     end if
     
     format_file = 'legacy' ! Default : legacy

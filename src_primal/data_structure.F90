@@ -111,7 +111,7 @@ module data_structure_mod
     integer :: nsave
 
 !       First order flag
-    real*8 :: fo_flag
+    real*8 :: f_o_flag
 
 !       Objective function
     real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
@@ -121,6 +121,8 @@ module data_structure_mod
 
 !       No of shapes
     integer :: shapes
+
+    integer :: blockx = 32, blocky = 1, blockz = 1
 
     contains
 

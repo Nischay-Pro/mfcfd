@@ -8,7 +8,7 @@ module device_data_structure_mod
 
         implicit none
 
-        integer, constant :: mp_d, gamma_d, mach_d
+        integer, constant :: mp_d, fo_flag, gamma_d, mach_d
         real*8, constant :: cfl_d, power_d, vl_d, eu_d
         real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
 
@@ -112,6 +112,7 @@ module device_data_structure_mod
                 cfl_d = cfl
                 power_d = power
                 vl_d = vl_const
+                fo_flag = f_o_flag
                 eu_d = euler
                 gamma_d = gamma
                 mach_d = mach
@@ -139,11 +140,34 @@ module device_data_structure_mod
 
         end subroutine
 
-        subroutine device_to_host()
-                implicit none
+        subroutine dq_device_to_host()
+            implicit none
+            point%dq = point_d%dq
+        end subroutine
 
-                point%prim    = point_d%prim
+        subroutine qm_device_to_host()
+            implicit none
+            point%qm = point_d%qm
+        end subroutine
 
+        subroutine prim_device_to_host()
+            implicit none
+            point%prim = point_d%prim
+        end subroutine
+
+        subroutine dq_host_to_device()
+            implicit none
+            point_d%dq = point%dq
+        end subroutine
+
+        subroutine qm_host_to_device()
+            implicit none
+            point_d%qm = point%qm
+        end subroutine
+
+        subroutine prim_host_to_device()
+            implicit none
+            point_d%prim = point%prim
         end subroutine
 
 end module device_data_structure_mod
