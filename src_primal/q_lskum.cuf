@@ -53,7 +53,7 @@ contains
                 allocate(sum_res_sqr_d(max_points))
 
                 tBlock = dim3 (blockx, blocky, blockz)
-                grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
+                grid = dim3(ceiling(real(local_points)/ tBlock%x), 1, 1)
                 blockDim = blockx*blocky*blockz
                 
                 if(rank == 0) then

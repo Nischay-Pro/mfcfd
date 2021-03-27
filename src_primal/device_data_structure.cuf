@@ -108,7 +108,7 @@ module device_data_structure_mod
                 implicit none
 
                 ! set constant point info on device
-                mp_d = max_points
+                mp_d = local_points
                 cfl_d = cfl
                 power_d = power
                 vl_d = vl_const
