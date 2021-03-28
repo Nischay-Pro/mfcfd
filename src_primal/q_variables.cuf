@@ -58,7 +58,7 @@ contains
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+                if(i > lp_d) return
 
                 x_i = x_d(1,i)
                 y_i = x_d(2,i)
@@ -138,7 +138,7 @@ contains
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+                if(i > lp_d) return
 
                 x_i = x_d(1,i)
                 y_i = x_d(2,i)
@@ -231,7 +231,7 @@ contains
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+                if(i > lp_d) return
 
                 dq_d(1,:,i) = inner1_d(:,i)
                 dq_d(2,:,i) = inner2_d(:,i)

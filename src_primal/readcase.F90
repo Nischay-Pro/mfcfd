@@ -124,6 +124,10 @@ subroutine readcase()
         format = 2
     end if
     
+    blockx = 64
+    call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                  '-blockx',blockx,set,ierr); CHKERRQ(ierr)
+
     ! Print paramaters to screen
     if (rank==0) then
         write(*,*) 'max_iters       :', max_iters

@@ -8,7 +8,7 @@ module device_data_structure_mod
 
         implicit none
 
-        integer, constant :: mp_d, fo_flag, gamma_d, mach_d
+        integer, constant :: mp_d, lp_d, fo_flag, gamma_d, mach_d
         real*8, constant :: cfl_d, power_d, vl_d, eu_d
         real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
 
@@ -108,7 +108,8 @@ module device_data_structure_mod
                 implicit none
 
                 ! set constant point info on device
-                mp_d = local_points
+                mp_d = max_points
+                lp_d = local_points
                 cfl_d = cfl
                 power_d = power
                 vl_d = vl_const

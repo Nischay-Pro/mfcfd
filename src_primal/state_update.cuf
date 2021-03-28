@@ -26,7 +26,7 @@ module state_update_mod
 
                 k = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(k > mp_d) return
+                if(k > lp_d) return
 
                 sum_res_sqr(k) = 0.0d0
                 
@@ -235,7 +235,7 @@ module state_update_mod
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+                if(i > lp_d) return
                 
                 primold_d(:,i) = prim_d(:,i)
                 

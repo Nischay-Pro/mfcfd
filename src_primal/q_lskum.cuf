@@ -1,219 +1,224 @@
 module q_lskum_mod
-
-        use q_variables_mod
-        use flux_residual_mod
-        use state_update_mod
-        use data_structure_mod
-        use device_data_structure_mod
-        use point_normals_mod    
-        use generate_connectivity_mod
-        use post_processing_mod
-        use cudafor
-        use ieee_arithmetic
-
-        real*8, device :: temp
-        real*8, device, allocatable :: sum_res_sqr_d(:)
-
-contains
-
-        subroutine q_lskum()
-
-                implicit none
-
-                ! Grid and block dim
-                type(dim3) :: grid , tBlock
-                integer :: istat
-                integer :: i
-                integer :: rk, blockDim
-                real*8 :: start, finish
-                real*8 :: sum_res_sqr, residue
-
-                !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                !OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
-                call compute_normals()
-                call generate_connectivity()
-                if(rank == 0) then
-                    write(*,*)
-                    write(*,*)'%%%%-Normals and connectivity generated-%%%'
-                    write(*,*)
-                end if
-
-                ! call cpu_time(start)
-
-                ! Transfer from host device
-                call host_to_device()
-                
-                if(rank == 0) then
-                    write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
-                    write(*,*)
-                end if
-
-                allocate(sum_res_sqr_d(max_points))
-
-                tBlock = dim3 (blockx, blocky, blockz)
-                grid = dim3(ceiling(real(local_points)/ tBlock%x), 1, 1)
-                blockDim = blockx*blocky*blockz
-                
-                if(rank == 0) then
-                    write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%'
-                    write(*,*) 'number of threads per block:', blockDim
-                    write(*,*) 'grid dimension:',grid
-                    write(*,*) 'thread block dimension:',tBlock
-                end if
-
-                if(rank == 0) then
-                    write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-                    write(*,*)
-                end if
-
-                if(solution_restart == 0) itr = 0
-
-                istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferNone)
-
-                do it = itr+1, itr+max_iters
-
-                        call eval_timestep<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                        & point_d%conn, point_d%delta, point_d%prim, point_d%prim_old)
-
-                        do rk = 1, rks
-
-                                call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
-
-                                call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                        & point_d%conn, point_d%q, point_d%qm, point_d%dq)
-
-                                call dq_device_to_host()
-                                call qm_device_to_host()
-                                call update_begin_dq_ghost()
-                                call update_begin_qm_ghost()
-                                call update_end_dq_ghost()
-                                call update_end_qm_ghost()
-                                call dq_host_to_device()
-                                call qm_host_to_device()
-
-                                do i = 1, inner_iterations
-
-                                        call eval_q_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                                & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner1, point_d%inner2)
-
-                                        call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner1, point_d%inner2)
-                                        call dq_device_to_host()
-                                        call update_begin_dq_ghost()
-                                        call update_end_dq_ghost()
-                                        call dq_host_to_device()
-                                end do
-
-                                call cal_flux_residual1<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
-                                        & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
-                                        & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)       
-                                call cal_flux_residual2<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%xpos_nbhs, point_d%xpos_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)                                
-                                call cal_flux_residual3<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%xneg_nbhs, point_d%xneg_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)
-                                call cal_flux_residual4<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%ypos_nbhs, point_d%ypos_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)
-                                call cal_flux_residual5<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%yneg_nbhs, point_d%yneg_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)                                                                                                                
-
-                                call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
-                                        & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
-                                        & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
-                                call prim_device_to_host()
-                                call update_begin_prim_ghost()
-                                call update_end_prim_ghost()
-                                call prim_host_to_device()
-                        end do
-
-                        istat = cudaGetLastError() 
-
-                        if (istat .ne. 0) then
-                                print*, cudaGetErrorString(istat) 
-                                stop istat 
-                        endif
-                        
-                        ! Residue norm evaluation
-                        
-                        temp = 0.0
-
-                        !$cuf kernel do <<< *, * >>>
-                        do i = 1, mp_d
-                                temp = temp + sum_res_sqr_d(i)
-                        end do
-
-                        sum_res_sqr = temp
-                        
-                        ! temp2 = 0.0
-                        ! do i = 1, mp_d
-                        !         temp2 = temp2 + cost_func_d(i)
-                        ! end do
-
-                        ! cost_func = temp2
-
-                        ! write(*,*) "Objective Function J:", cost_func
-                        ! write(302,*) it, cost_func
-
-                        residue = dsqrt(sum_res_sqr)/max_points
-
-                        if (it .le. 2 .and. solution_restart == 0) then
-                                res_old = residue
-                                residue = 0.0d0
-                        else
-                                residue = dlog10(residue/res_old)
-                        end if
-                        if(rank == 0) then
-                            write(*,*) "iterations:", it, "residue:", residue
-                        end if
-                       ! write(301,*) it, residue
-
-                        if(ieee_is_nan(residue))exit
+    
+    use q_variables_mod
+    use flux_residual_mod
+    use state_update_mod
+    use data_structure_mod
+    use device_data_structure_mod
+    use point_normals_mod    
+    use generate_connectivity_mod
+    use post_processing_mod
+    use cudafor
+    use ieee_arithmetic
+    
+    real*8, device :: temp
+    real*8, device, allocatable :: sum_res_sqr_d(:)
+    
+    contains
+    
+    subroutine q_lskum()
         
-                       ! if(mod(it,nsave) == 0) then
-                       !         write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
-                       !         call device_to_host()
-                       !         call print_primal_output()
-                       ! end if
-                enddo
-
-                it = it - 1
+        implicit none
+        
+        ! Grid and block dim
+        type(dim3) :: grid , tBlock
+        integer :: istat
+        integer :: i
+        integer :: rk, blockDim
+        real*8 :: start, finish
+        real*8 :: sum_res_sqr, residue
+        
+        !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+        !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+        !OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+        
+        call compute_normals()
+        call generate_connectivity()
+        if(rank == 0) then
+            write(*,*)
+            write(*,*)'%%%%-Normals and connectivity generated-%%%'
+            write(*,*)
+        end if
+        
+        ! call cpu_time(start)
+        
+        ! Transfer from host device
+        call host_to_device()
+        
+        if(rank == 0) then
+            write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
+            write(*,*)
+        end if
+        
+        allocate(sum_res_sqr_d(local_points))
+        
+        tBlock = dim3 (blockx, blocky, blockz)
+        grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
+        blockDim = blockx*blocky*blockz
+        
+        if(rank == 0) then
+            write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%'
+            write(*,*) 'number of threads per block:', blockDim
+            write(*,*) 'grid dimension:',grid
+            write(*,*) 'thread block dimension:',tBlock
+        end if
+        
+        if(rank == 0) then
+            write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+            write(*,*)
+        end if
+        
+        if(solution_restart == 0) itr = 0
+        
+        istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferNone)
+        
+        do it = itr+1, itr+max_iters
+            
+            call eval_timestep<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+            & point_d%conn, point_d%delta, point_d%prim, point_d%prim_old)
+            
+            do rk = 1, rks
                 
+                call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
+                
+                call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                & point_d%conn, point_d%q, point_d%qm, point_d%dq)
+                
+                call dq_device_to_host()
+                call qm_device_to_host()
+                call update_begin_dq_ghost()
+                call update_begin_qm_ghost()
+                call update_end_dq_ghost()
+                call update_end_qm_ghost()
+                call dq_host_to_device()
+                call qm_host_to_device()
+                
+                do i = 1, inner_iterations
+                    
+                    call eval_q_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                    & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner1, point_d%inner2)
+                    
+                    call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner1, point_d%inner2)
+                    call dq_device_to_host()
+                    call update_begin_dq_ghost()
+                    call update_end_dq_ghost()
+                    call dq_host_to_device()
+                end do
+                
+                call cal_flux_residual1<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
+                & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
+                & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
+                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)       
+                call cal_flux_residual2<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                & point_d%xpos_nbhs, point_d%xpos_conn, point_d%prim,  &
+                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)                                
+                call cal_flux_residual3<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                & point_d%xneg_nbhs, point_d%xneg_conn, point_d%prim,  &
+                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)
+                call cal_flux_residual4<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                & point_d%ypos_nbhs, point_d%ypos_conn, point_d%prim,  &
+                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)
+                call cal_flux_residual5<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                & point_d%yneg_nbhs, point_d%yneg_conn, point_d%prim,  &
+                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)                                                                                                                
+                
+                call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
+                & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
+                & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
                 call prim_device_to_host()
-
-                if(rank == 0) then
-                    write(*,*)
-                    write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
-                    write(*,*)
-                end if
-                !do i=1, max_points
-                !        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
-                !end do
-
-                istat = cudaDeviceSynchronize()
-                if (istat .ne. 0) then
-                        print*, cudaGetErrorString(istat) 
-                        stop istat 
-                endif
-
-                ! call cpu_time(finish)
-
-                ! time = finish - start
-
-                !CLOSE(UNIT=301)
-                !CLOSE(UNIT=302)
-                !CLOSE(UNIT=303)
-
-        end subroutine
-
+                call update_begin_prim_ghost()
+                call update_end_prim_ghost()
+                call prim_host_to_device()
+            end do
+            
+            istat = cudaGetLastError() 
+            
+            if (istat .ne. 0) then
+                print*, cudaGetErrorString(istat) 
+                stop istat 
+            endif
+            
+            ! Residue norm evaluation
+            
+            temp = 0.0
+            
+            !$cuf kernel do <<< *, * >>>
+            do i = 1, lp_d
+                temp = temp + sum_res_sqr_d(i)
+            end do
+            
+            sum_res_sqr = temp
+            
+            ! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
+            ! 0, PETSC_COMM_WORLD, ierr)
+            
+            ! call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+            !   ierr)
+            
+            ! res_new = dsqrt(gsum_res_sqr)/plen
+            
+            ! if(t .le. 2 .and. restart == 0) then
+            !     res_old = res_new
+            !     residue = 0.d0
+            ! else 
+            !     residue = dlog10(res_new/res_old)
+            ! endif
+            
+            residue = dsqrt(sum_res_sqr)/max_points
+            
+            if (it .le. 2 .and. solution_restart == 0) then
+                res_old = residue
+                residue = 0.0d0
+            else
+                residue = dlog10(residue/res_old)
+            end if
+            if(rank == 0) then
+                write(*,*) "iterations:", it, "residue:", residue
+            end if
+            ! write(301,*) it, residue
+            
+            if(ieee_is_nan(residue))exit
+            
+            ! if(mod(it,nsave) == 0) then
+            !         write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+            !         call device_to_host()
+            !         call print_primal_output()
+            ! end if
+        enddo
+        
+        it = it - 1
+        
+        call prim_device_to_host()
+        
+        if(rank == 0) then
+            write(*,*)
+            write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
+            write(*,*)
+        end if
+        !do i=1, max_points
+        !        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
+        !end do
+        
+        istat = cudaDeviceSynchronize()
+        if (istat .ne. 0) then
+            print*, cudaGetErrorString(istat) 
+            stop istat 
+        endif
+        
+        ! call cpu_time(finish)
+        
+        ! time = finish - start
+        
+        !CLOSE(UNIT=301)
+        !CLOSE(UNIT=302)
+        !CLOSE(UNIT=303)
+        
+    end subroutine
+    
 end module q_lskum_mod

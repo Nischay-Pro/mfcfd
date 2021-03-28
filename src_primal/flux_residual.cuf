@@ -25,7 +25,7 @@ contains
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-            if(i > mp_d) return
+            if(i > lp_d) return
 
             threadid = threadIdx%x
             blockd = blockDim%x
@@ -70,7 +70,7 @@ contains
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-            if(i > mp_d) return
+            if(i > lp_d) return
 
             threadid = threadIdx%x
             blockd = blockDim%x
@@ -104,7 +104,7 @@ contains
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-            if(i > mp_d) return
+            if(i > lp_d) return
 
             threadid = threadIdx%x
             blockd = blockDim%x
@@ -139,7 +139,7 @@ contains
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-            if(i > mp_d) return
+            if(i > lp_d) return
 
             threadid = threadIdx%x
             blockd = blockDim%x
@@ -173,7 +173,7 @@ contains
 
             i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-            if(i > mp_d) return
+            if(i > lp_d) return
 
             threadid = threadIdx%x
             blockd = blockDim%x
