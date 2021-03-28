@@ -1,9 +1,8 @@
 module post_processing_mod
-
+#include <petsc/finclude/petscsys.h>
 
     use data_structure_mod
     use petsc_data_structure_mod
-
 
 contains
 
@@ -12,6 +11,8 @@ contains
 
 
         implicit none
+
+        PetscErrorCode  :: ierr
 
         integer :: i
         character(len=64) :: sfile

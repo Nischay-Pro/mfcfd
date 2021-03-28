@@ -1,6 +1,5 @@
 program meshfree_solver
-    
-    #include <petsc/finclude/petscsys.h>
+#include <petsc/finclude/petscsys.h>
     
     use petscsys
     use cudafor

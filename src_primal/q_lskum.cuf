@@ -1,5 +1,6 @@
 module q_lskum_mod
-    
+#include <petsc/finclude/petscsys.h>    
+
     use q_variables_mod
     use flux_residual_mod
     use state_update_mod
@@ -13,7 +14,6 @@ module q_lskum_mod
     
     real*8, device :: temp
     real*8, device, allocatable :: sum_res_sqr_d(:)
-    
     contains
     
     subroutine q_lskum()
@@ -27,7 +27,7 @@ module q_lskum_mod
         integer :: rk, blockDim
         real*8 :: start, finish
         real*8 :: sum_res_sqr, residue
-        
+        PetscErrorCode  :: ierr
         !OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
         !OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
         !OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
@@ -155,33 +155,24 @@ module q_lskum_mod
             
             sum_res_sqr = temp
             
-            ! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
-            ! 0, PETSC_COMM_WORLD, ierr)
+            call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
+            0, PETSC_COMM_WORLD, ierr)
             
-            ! call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-            !   ierr)
+            call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+              ierr)
             
-            ! res_new = dsqrt(gsum_res_sqr)/plen
+            res_new = dsqrt(gsum_res_sqr)/plen
             
-            ! if(t .le. 2 .and. restart == 0) then
-            !     res_old = res_new
-            !     residue = 0.d0
-            ! else 
-            !     residue = dlog10(res_new/res_old)
-            ! endif
-            
-            residue = dsqrt(sum_res_sqr)/max_points
-            
-            if (it .le. 2 .and. solution_restart == 0) then
-                res_old = residue
-                residue = 0.0d0
-            else
-                residue = dlog10(residue/res_old)
-            end if
+            if(it .le. 2 .and. restart == 0) then
+                res_old = res_new
+                residue = 0.d0
+            else 
+                residue = dlog10(res_new/res_old)
+            endif
+    
             if(rank == 0) then
                 write(*,*) "iterations:", it, "residue:", residue
             end if
-            ! write(301,*) it, residue
             
             if(ieee_is_nan(residue))exit
             

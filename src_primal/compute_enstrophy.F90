@@ -1,5 +1,5 @@
 module compute_enstrophy_mod
-    #include <petsc/finclude/petscsys.h>
+#include <petsc/finclude/petscsys.h>
     
     use data_structure_mod
     use petsc_data_structure_mod
