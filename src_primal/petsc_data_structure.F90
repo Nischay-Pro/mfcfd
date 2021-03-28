@@ -9,7 +9,7 @@ module petsc_data_structure_mod
 
     implicit none
 
-    PetscMPIInt      :: rank,proc
+    PetscMPIInt      :: rank,proc,local_size,local_rank
     Vec          :: p_dq
     Vec          :: p_qm
     Vec          :: p_prim

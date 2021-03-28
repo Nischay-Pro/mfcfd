@@ -11,11 +11,12 @@ program meshfree_solver
     use q_lskum_mod
     
     implicit none
-    integer :: istat, i, j, nDevices=0
+    integer :: istat, i, j, nDevices=0, local_gpu
     integer :: accessPeer1, accessPeer2
     real*8  :: start,finish, runtime
     type(cudaDeviceProp) :: prop
     real*8  :: totaltime
+    MPI_Comm local_comm
     PetscErrorCode  :: ierr
     
     call PetscInitialize('case.in', ierr)
@@ -54,7 +55,13 @@ program meshfree_solver
             write(*,*) 'ERROR: There are no devices available on this host.  ABORTING.'
         endif
     end if
-    istat = cudaSetDevice(rank)
+
+    call MPI_Comm_split_type(PETSC_COMM_WORLD, MPI_COMM_TYPE_SHARED, rank, MPI_INFO_NULL, local_comm, ierr)
+    call MPI_Comm_size(local_comm, local_size, ierr)
+    call MPI_Comm_rank(local_comm, local_rank, ierr)
+
+    local_gpu= mod(local_rank,local_size)
+    istat = cudaSetDevice(local_gpu)
     istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferNone)
     if (istat /= 0) then
         print *, 'main: error setting cudaFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
