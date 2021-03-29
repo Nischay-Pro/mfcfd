@@ -60,11 +60,16 @@ program meshfree_solver
     call MPI_Comm_size(local_comm, local_size, ierr)
     call MPI_Comm_rank(local_comm, local_rank, ierr)
 
-    local_gpu= mod(local_rank,local_size)
+    local_gpu = mod(local_rank,local_size)
+    WRITE(*,*) local_gpu
     istat = cudaSetDevice(local_gpu)
+    if (istat /= 0) then
+        print *, 'main: error setting CUDADevice',cudaGetErrorString(istat)
+        stop
+    endif
     istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferNone)
     if (istat /= 0) then
-        print *, 'main: error setting cudaFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
+        print *, 'main: error setting CUDAFuncAttributePreferredSharedMemoryCarveout',cudaGetErrorString(istat)
         stop
     endif
     
@@ -123,7 +128,7 @@ program meshfree_solver
     
     !       Save solution one last time
     
-    call print_primal_output()
+    ! call print_primal_output()
     
     !       destroy petsc vectors and deallocate point/solution vectors
     call dest_petsc()
