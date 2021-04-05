@@ -30,7 +30,7 @@ spack load petsc%gcc
 
 Then run the following command from the `install` directory:
 
-`python3 install.py --mfcfd serial --cextra="-DPETSC_EXECUTABLE_RUNS=ON"
+`python3 install.py --mfcfd serial --cextra="-DPETSC_EXECUTABLE_RUNS=ON"`
 
 After building, an executable `execname` will be generated.
 
