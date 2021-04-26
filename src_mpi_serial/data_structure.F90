@@ -59,8 +59,9 @@ module data_structure_mod
     integer :: it, itr
 
     !Flag for time stepping
-    integer :: rks 
-    real*8 :: euler
+    integer :: rks = 1
+    real*8 :: euler = 2.0d0
+    character(len=20)  :: tscheme = 'ssprk43'
     real*8 :: total_loss_stagpressure
     real*8  :: res_old, res_new, residue, max_res
     real* 8 :: gsum_res_sqr,sum_res_sqr
@@ -71,9 +72,9 @@ module data_structure_mod
     integer :: format
 
 !The parameter CFL is the CFL number for stability ..
-    real*8 :: CFL
+    real*8 :: cfl = 0.0d0
 
-    integer :: max_iters
+    integer :: max_iters = 10000000
 
 !Unsteady variables
     real*8 :: t, tfinal, dtg
@@ -89,26 +90,29 @@ module data_structure_mod
 !       power = -2.0 => weights = 1/d^2
 !       power = -4.0 => weights = 1/d^4
 !
-    real*8 :: power
+    real*8 :: power = 0.0d0
 !
 !       limiter_flag = 1 => venkatakrishnan limiter
 !       limiter_flag = 2 => min-max limiter     
 !
     integer :: limiter_flag
-    real*8 :: VL_CONST  ! Venkatakrishnan limiter constant ..
+    real*8 :: VL_CONST = 150.0d0  ! Venkatakrishnan limiter constant ..
 
-    integer :: restart
+!       Restart
+    integer :: restart = 0
 
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0
 !
-    integer :: interior_points_normal_flag
+!       Interior normal flag
+    integer :: interior_points_normal_flag = 0
 
 !       Restart solution parameter
+    character(len=20)  :: restart_solution = 'no'
     integer :: solution_restart
 
-!       solution save parameter
-    integer :: nsave
+    !       save frequency
+    integer :: nsave = 10000000
 
 !       First order flag
     real*8 :: fo_flag
@@ -119,10 +123,88 @@ module data_structure_mod
 
     integer :: inner_iterations = 0
 
+!       format tag
+    character(len=20)  :: format_file = 'legacy'
+    integer :: file_format = 1
+
+!       solution accuracy
+    character(len=20)  :: solution_accuracy = 'second'
+    real*8 :: f_o_flag
+
+
 !       No of shapes
-    integer :: shapes
+    integer :: shapes = 1
+
+!       Block input
+    integer :: blockx = 32, blocky = 1, blockz = 1
+
+    namelist / input_parameters /   &
+                  shapes, &
+                         cfl, &
+                   max_iters, &
+                      blockx, &
+                      blocky, &
+                      blockz, &
+                      vl_const, &
+                      power, &
+                      restart_solution, &
+                      solution_accuracy, &
+                      format_file, &
+                      nsave, &
+                      interior_points_normal_flag, &
+                      tscheme, &
+                      mach, &
+                      aoa, &
+                      inner_iterations
+
 
     contains
+
+    subroutine readnml()
+
+            implicit none
+            integer :: os
+
+
+            open(unit=10,file='input.nml',form='formatted',status='old',iostat=os)
+            read(unit=10,nml=input_parameters)
+
+            close(10)
+            write(*,*) 'Limiter:', 'venkat'
+            write(*,*)
+            write(*,*) '%%%%%%%%%%%%%%-Nml file info-%%%%%%%%%%%%%%'
+            write(*,nml=input_parameters)
+            write(*,*)
+
+            if(solution_accuracy == 'second') then
+                    f_o_flag = 1.0d0
+            elseif(solution_accuracy == 'first') then
+                    f_o_flag = 0.0d0
+            end if
+
+            if(restart_solution == 'no') then
+                    solution_restart = 0
+            elseif(restart_solution == 'yes') then
+                    solution_restart = 1
+            end if
+
+
+
+            if(tscheme == 'first') then
+                    rks = 1
+                    euler = 2.0d0
+            elseif(tscheme == 'ssprk43') then
+                    rks = 4
+                    euler = 1.0d0
+            end if
+
+            if(format_file == 'legacy') then
+                    file_format = 1
+            elseif(format_file == 'quadtree') then
+                    file_format = 2
+                    interior_points_normal_flag = 100000
+            end if
+    end subroutine
 
     subroutine allocate_soln()
         implicit none

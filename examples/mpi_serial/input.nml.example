@@ -1,0 +1,10 @@
+&input_parameters 
+    cfl = 0.5
+    max_iters = 10
+    vl_const = 100
+    inner_iterations = 3
+    mach = 0.63
+    aoa = 2.0
+    restart_solution = 'no'
+    inner_iterations = 3
+/

@@ -1,7 +1,6 @@
 module point_preprocessor_mod
 
     use data_structure_mod
-    use petsc_data_structure_mod
     USE HDF5
     ! USE ReadH5dataset
 
@@ -33,11 +32,6 @@ contains
     end subroutine
 
     subroutine read_hdf5input_point_data()
-
-#include <petsc/finclude/petscsys.h>
-
-        use petscsys
-
         implicit none
 
         integer:: i, k, r, nproc
@@ -71,9 +65,8 @@ contains
         REAL(KIND=8), DIMENSION(:,:), ALLOCATABLE, TARGET     :: H52DDoubledataset
 
         part_grid = 'point/point.h5'
-        ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
-        main_group = '/'//trim(itos_unpad(rank+1))
+        main_group = '/'//trim(itos_unpad(1))
         ghost_attribute = 'ghost'
         local_attribute = 'local'
         total_attribute = 'total'
@@ -239,7 +232,7 @@ contains
 
             if(point%flag_2(k) > 0) then
                 if(point%flag_2(k) > shapes)then
-                    SETERRA(PETSC_COMM_WORLD,1,'shapes value wrong, check again')
+                    print*,'shapes value wrong, check again'
                 end if
                 shape_points = shape_points + 1
             end if
@@ -343,20 +336,6 @@ contains
             ErrorMessage=" *** Error reading data"
             return
         ENDIF
-
-        if (proc > 1) then
-            allocate(pghost(ghost_points))
-
-            do k = 1, ghost_points
-    
-                pghost(k) = int(H52DDoubledataset(1,k))
-
-                point%x(local_points + k) = H52DDoubledataset(2,k)
-                point%y(local_points + k) = H52DDoubledataset(3,k)
-                point%min_dist(local_points + k) = H52DDoubledataset(4,k)
-            end do
-
-        end if
 
         DEALLOCATE(H52DDoubledataset,stat=AllocStat)
         IF ( AllocStat.ne.0 ) THEN

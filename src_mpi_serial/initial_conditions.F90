@@ -1,7 +1,6 @@
 module initial_conditions_mod
 
     use data_structure_mod
-    use petsc_data_structure_mod
     use parameter_mod
 
 contains
@@ -24,18 +23,10 @@ contains
             enddo
         
         elseif(restart == 1) then
-    
-            if(rank == 0) then
-                write(*,*)'%%%%%%%%%%%%-Using restart file-%%%%%%%%%%%'
-                write(*,*)
-            end if
 
             call setup_case_parameters()
             
             call restart_sol()
-
-            call update_begin_prim_ghost()
-            call update_end_prim_ghost()
         
         endif
 
@@ -49,11 +40,7 @@ contains
         character(len=64) :: sfile
         character(len=10) :: itos
 
-        if(proc==1) then
             sfile = 'restart/sol.dat'
-        else
-            sfile = 'restart/'//'sol-'//trim(itos(4,rank))//'.dat'
-        end if
 
         OPEN(UNIT=515,FILE=trim(sfile),form='formatted', action="read")
 

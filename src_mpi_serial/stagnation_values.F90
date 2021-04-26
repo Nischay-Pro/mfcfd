@@ -1,8 +1,5 @@
 module stagnation_values_mod
-#include <petsc/finclude/petscsys.h>
-
     use data_structure_mod
-    use petsc_data_structure_mod
 
     contains
 
@@ -47,8 +44,6 @@ module stagnation_values_mod
         integer :: i
         real*8 :: p0_inf, gammaPower, p0, p0_sum, constant, angle, mach_t
         real*8 :: prim(4)
-        real*8 :: total_p0
-        PetscErrorCode :: ierr
 
         gammaPower = gamma/(gamma-1)
         p0_inf = pr_inf*((1 + ((gamma - 1)/2)*mach*mach) ** gammaPower)
@@ -64,14 +59,8 @@ module stagnation_values_mod
         p0_sum = p0_sum + (p0_inf - p0) ** 2
         enddo
 
-        call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
-           PETSC_COMM_WORLD, ierr)
+        total_loss_stagpressure = p0_sum * constant
 
-        total_loss_stagpressure = total_p0 * constant
-
-        if(rank == 0) then
-        write(*,*) "J: ", total_loss_stagpressure
-        endif
     end subroutine
 
 

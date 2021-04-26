@@ -1,7 +1,6 @@
 module generate_connectivity_mod
     
     use data_structure_mod
-    use petsc_data_structure_mod
 
     contains
 
@@ -106,13 +105,13 @@ module generate_connectivity_mod
         enddo
 
         if(point%xpos_nbhs(i) == 0) then
-            print*,"WARNING!!! xpos zero for interior point number:", i,", rank:", rank
+            print*,"WARNING!!! xpos zero for interior point number:", i
         elseif(point%xneg_nbhs(i) == 0) then
-            print*,"WARNING!!! xneg zero for interior point number:", i,", rank:", rank
+            print*,"WARNING!!! xneg zero for interior point number:", i
         elseif(point%ypos_nbhs(i) == 0) then
-            print*,"WARNING!!! ypos zero for interior point number:", i,", rank:", rank
+            print*,"WARNING!!! ypos zero for interior point number:", i
         elseif(point%yneg_nbhs(i) == 0) then
-            print*,"WARNING!!! yneg zero for interior point number:", i,", rank:", rank
+            print*,"WARNING!!! yneg zero for interior point number:", i
         end if
         
     end subroutine
@@ -176,11 +175,11 @@ module generate_connectivity_mod
             enddo
             
             if(point%xpos_nbhs(i) == 0) then
-                print*,"WARNING!!! xpos zero for wall point number:", i,", rank:", rank
+                print*,"WARNING!!! xpos zero for wall point number:", i
             elseif(point%xneg_nbhs(i) == 0) then
-                print*,"WARNING!!! xneg zero for wall point number:", i,", rank:", rank
+                print*,"WARNING!!! xneg zero for wall point number:", i
             elseif(point%yneg_nbhs(i) == 0) then
-                print*,"WARNING!!! yneg zero for wall point number:", i,", rank:", rank
+                print*,"WARNING!!! yneg zero for wall point number:", i
             end if
     
     end subroutine
@@ -246,11 +245,11 @@ module generate_connectivity_mod
             enddo
     
             if(point%xpos_nbhs(i) == 0) then
-                print*,"WARNING!!! xpos zero for outer point number:", i,", rank:", rank
+                print*,"WARNING!!! xpos zero for outer point number:", i
             elseif(point%xneg_nbhs(i) == 0) then
-                print*,"WARNING!!! xneg zero for outer point number:", i,", rank:", rank
+                print*,"WARNING!!! xneg zero for outer point number:", i
             elseif(point%ypos_nbhs(i) == 0) then
-                print*,"WARNING!!! ypos zero for outer point number:", i,", rank:", rank
+                print*,"WARNING!!! ypos zero for outer point number:", i
             end if
     
     end subroutine

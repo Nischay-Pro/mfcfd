@@ -1,9 +1,6 @@
 module compute_entropy_mod
-#include <petsc/finclude/petscsys.h>
-
     use data_structure_mod
-    use petsc_data_structure_mod
-
+    
     contains
 
 
@@ -14,8 +11,6 @@ module compute_entropy_mod
 
             integer :: k
 			real*8 :: temp1, temp2
-            real*8 :: gtotal_entropy
-            PetscErrorCode :: ierr
 
             total_entropy = 0.d0
 
@@ -29,13 +24,6 @@ module compute_entropy_mod
                 
                 total_entropy = total_entropy + dabs(temp1 - temp2)
             enddo
-
-            call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
-                & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-
-            ! if(rank == 0) then
-            !     !write(*,*)"total entropy :", gtotal_entropy
-            ! end if
 
         end subroutine 
 

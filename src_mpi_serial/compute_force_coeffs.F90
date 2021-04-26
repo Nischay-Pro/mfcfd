@@ -1,12 +1,8 @@
 module compute_force_coeffs_mod
-#include <petsc/finclude/petscsys.h>
 
     use data_structure_mod
-    use petsc_data_structure_mod
 
     contains
-
-
 
         subroutine compute_cl_cd_cm()
 
@@ -24,10 +20,9 @@ module compute_force_coeffs_mod
 			real*8 :: nx, ny
             character(len=64) :: cp_file
             character(len=10) :: itos
-            PetscErrorCode :: ierr
 
             cp_file = 'cp/'//'cp-file'
-            if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))
+
 
             OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
@@ -77,25 +72,11 @@ module compute_force_coeffs_mod
 
             enddo
 
-            lCl = V*dcos(theta) - H*dsin(theta)
-            lCd = H*dcos(theta) + V*dsin(theta)
-            lCm = pitch_mom
+            Cl = V*dcos(theta) - H*dsin(theta)
+            Cd = H*dcos(theta) + V*dsin(theta)
+            Cm = pitch_mom
 
-            call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
-                & PETSC_COMM_WORLD, ierr)
-            call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
-                & PETSC_COMM_WORLD, ierr)
-            call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
-                & PETSC_COMM_WORLD, ierr)
-
-            Cl = lCl1 * 1.0
-            Cd = lCd1 * 1.0
             ClCd = Cl/Cd
-            ! if(rank == 0) then
-            !     do j = 1, shapes
-            !         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
-            !     end do
-            ! end if
 
             CLOSE(UNIT=201)
 
