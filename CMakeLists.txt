@@ -7,15 +7,7 @@ ENABLE_LANGUAGE(C)
 ENABLE_LANGUAGE(CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-if( NOT "${MFCFD}" MATCHES "CUDA" )
-#------------------------------------------------------------------------------#
-# PETSc support
-#------------------------------------------------------------------------------#
-find_package(PETSc REQUIRED)
-include_directories(${PETSC_INCLUDES})
-set(LIBS ${LIBS} ${PETSC_LIBRARIES})
-
-else()
+if( "${MFCFD}" MATCHES "CUDA" )
 #------------------------------------------------------------------------------#
 # CUDA support
 #------------------------------------------------------------------------------#
@@ -36,7 +28,7 @@ set(LIBS ${LIBS} ${HDF5_Fortran_LIBRARIES})
 if( "${MFCFD}" MATCHES "SERIAL" )
 message("Building Serial MeshFree Solver")
 add_compile_options(-march=native -O3 -ffree-line-length-512)
-FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_serial/*.F90")
+FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_serial/*.F90")
 add_executable(execname ${MFCFD_SOURCES})
 target_link_libraries(execname ${LIBS})
 
@@ -80,7 +72,7 @@ target_link_libraries(execname ${CUDA_cusparse_LIBRARY} ${LIBS})
 
 else()
 message("Building Default Serial MeshFree Solver")
-FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_serial/*.F90")
+FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_serial/*.F90")
 add_executable(execname ${MFCFD_SOURCES})
 target_link_libraries(execname ${LIBS})
 

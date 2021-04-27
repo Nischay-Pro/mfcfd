@@ -13,7 +13,7 @@ Apart from these dependencies the solver might require a number of transitive de
 
 ## Package Outline 
 
-* `src_mpi_serial` contains the code for the MPI version of the primal solver. 
+* `src_serial` contains the code for the MPI version of the primal solver. 
 
 In addition to these, we have
 * `install` contains the Python script to generate the executable for main verseions of the solvers.
