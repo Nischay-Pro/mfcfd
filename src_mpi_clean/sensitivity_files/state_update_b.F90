@@ -59,7 +59,7 @@ CONTAINS
       CALL PUSHREAL8(point%prim(3, k))
       point%prim(3, k) = u(3)*temp
       CALL PUSHREAL8(point%prim(4, k))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,outer_points
       k = outer_points_index(i)
@@ -89,7 +89,7 @@ CONTAINS
       CALL PUSHREAL8(point%prim(3, k))
       point%prim(3, k) = u(3)*temp
       CALL PUSHREAL8(point%prim(4, k))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,interior_points
       k = interior_points_index(i)
@@ -119,7 +119,7 @@ CONTAINS
       CALL PUSHREAL8(point%prim(3, k))
       point%prim(3, k) = u(3)*temp
       CALL PUSHREAL8(point%prim(4, k))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     ub = 0.0_8
     u_oldb = 0.0_8
@@ -128,14 +128,13 @@ CONTAINS
       temp = 1.0d0/u(1)
       CALL POPREAL8(point%prim(4, k))
       ub(4) = ub(4) + 0.4d0*pointb%prim(4, k)
-      tempb = -((u(2)**2+u(3)**2)*0.2d0*pointb%prim(4, k))
-      tempb0 = -(temp*0.2d0*pointb%prim(4, k))
+      tempb0 = -(0.5d0*0.4d0*pointb%prim(4, k))
       pointb%prim(4, k) = 0.0_8
-      ub(3) = ub(3) + 2*u(3)*tempb0 + temp*pointb%prim(3, k)
+      tempb = (u(2)**2+u(3)**2)*tempb0 + u(3)*pointb%prim(3, k)
+      ub(3) = ub(3) + 2*u(3)*temp*tempb0 + temp*pointb%prim(3, k)
       CALL POPREAL8(point%prim(3, k))
-      tempb = tempb + u(3)*pointb%prim(3, k)
       pointb%prim(3, k) = 0.0_8
-      ub(2) = ub(2) + 2*u(2)*tempb0 + temp*pointb%prim(2, k)
+      ub(2) = ub(2) + 2*u(2)*temp*tempb0 + temp*pointb%prim(2, k)
       CALL POPREAL8(point%prim(2, k))
       tempb = tempb + u(2)*pointb%prim(2, k)
       pointb%prim(2, k) = 0.0_8
@@ -174,14 +173,13 @@ CONTAINS
       temp = 1.0d0/u(1)
       CALL POPREAL8(point%prim(4, k))
       ub(4) = ub(4) + 0.4d0*pointb%prim(4, k)
-      tempb = -((u(2)**2+u(3)**2)*0.2d0*pointb%prim(4, k))
-      tempb0 = -(temp*0.2d0*pointb%prim(4, k))
+      tempb0 = -(0.5d0*0.4d0*pointb%prim(4, k))
       pointb%prim(4, k) = 0.0_8
-      ub(3) = ub(3) + 2*u(3)*tempb0 + temp*pointb%prim(3, k)
+      tempb = (u(2)**2+u(3)**2)*tempb0 + u(3)*pointb%prim(3, k)
+      ub(3) = ub(3) + 2*u(3)*temp*tempb0 + temp*pointb%prim(3, k)
       CALL POPREAL8(point%prim(3, k))
-      tempb = tempb + u(3)*pointb%prim(3, k)
       pointb%prim(3, k) = 0.0_8
-      ub(2) = ub(2) + 2*u(2)*tempb0 + temp*pointb%prim(2, k)
+      ub(2) = ub(2) + 2*u(2)*temp*tempb0 + temp*pointb%prim(2, k)
       CALL POPREAL8(point%prim(2, k))
       tempb = tempb + u(2)*pointb%prim(2, k)
       pointb%prim(2, k) = 0.0_8
@@ -219,14 +217,13 @@ CONTAINS
       temp = 1.0d0/u(1)
       CALL POPREAL8(point%prim(4, k))
       ub(4) = ub(4) + 0.4d0*pointb%prim(4, k)
-      tempb = -((u(2)**2+u(3)**2)*0.2d0*pointb%prim(4, k))
-      tempb0 = -(temp*0.2d0*pointb%prim(4, k))
+      tempb0 = -(0.5d0*0.4d0*pointb%prim(4, k))
       pointb%prim(4, k) = 0.0_8
-      ub(3) = ub(3) + 2*u(3)*tempb0 + temp*pointb%prim(3, k)
+      tempb = (u(2)**2+u(3)**2)*tempb0 + u(3)*pointb%prim(3, k)
+      ub(3) = ub(3) + 2*u(3)*temp*tempb0 + temp*pointb%prim(3, k)
       CALL POPREAL8(point%prim(3, k))
-      tempb = tempb + u(3)*pointb%prim(3, k)
       pointb%prim(3, k) = 0.0_8
-      ub(2) = ub(2) + 2*u(2)*tempb0 + temp*pointb%prim(2, k)
+      ub(2) = ub(2) + 2*u(2)*temp*tempb0 + temp*pointb%prim(2, k)
       CALL POPREAL8(point%prim(2, k))
       tempb = tempb + u(2)*pointb%prim(2, k)
       pointb%prim(2, k) = 0.0_8
@@ -300,7 +297,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,outer_points
       k = outer_points_index(i)
@@ -322,7 +319,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,interior_points
       k = interior_points_index(i)
@@ -350,7 +347,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
   END SUBROUTINE STATE_UPDATE
 
