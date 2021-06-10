@@ -61,7 +61,7 @@ module state_update_mod
             temp = 1.0d0/U(1)
             point%prim(2,k) = U(2)*temp
             point%prim(3,k) = U(3)*temp
-            point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
+            point%prim(4,k) = 0.4d0*(U(4) - (0.5d0*temp)*(U(2)*U(2) + U(3)*U(3)))
 
         enddo
 
@@ -95,7 +95,7 @@ module state_update_mod
             temp = 1.0d0/U(1)
             point%prim(2,k) = U(2)*temp
             point%prim(3,k) = U(3)*temp
-            point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
+            point%prim(4,k) = 0.4d0*(U(4) - (0.5d0*temp)*(U(2)*U(2) + U(3)*U(3)))
 
         enddo
 
@@ -135,13 +135,9 @@ module state_update_mod
             temp = 1.0d0/U(1)
             point%prim(2,k) = U(2)*temp
             point%prim(3,k) = U(3)*temp
-
-            point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
+            point%prim(4,k) = 0.4d0*(U(4) - (0.5d0*temp)*(U(2)*U(2) + U(3)*U(3)))
     
         enddo
-
-
-
 
     end subroutine
 
