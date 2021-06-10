@@ -76,9 +76,9 @@ CONTAINS
       pointd%prim(3, k) = temp*ud(3) + u(3)*tempd
       point%prim(3, k) = u(3)*temp
       temp0 = u(2)*u(2) + u(3)*u(3)
-      pointd%prim(4, k) = 0.4d0*ud(4) - 0.2d0*(temp0*tempd+temp*(2*u(2)*&
-&       ud(2)+2*u(3)*ud(3)))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*(temp*temp0)
+      pointd%prim(4, k) = 0.4d0*(ud(4)-0.5d0*(temp0*tempd+temp*(2*u(2)*&
+&       ud(2)+2*u(3)*ud(3))))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*(temp*temp0))
     END DO
     DO i=1,outer_points
       k = outer_points_index(i)
@@ -115,9 +115,9 @@ CONTAINS
       pointd%prim(3, k) = temp*ud(3) + u(3)*tempd
       point%prim(3, k) = u(3)*temp
       temp0 = u(2)*u(2) + u(3)*u(3)
-      pointd%prim(4, k) = 0.4d0*ud(4) - 0.2d0*(temp0*tempd+temp*(2*u(2)*&
-&       ud(2)+2*u(3)*ud(3)))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*(temp*temp0)
+      pointd%prim(4, k) = 0.4d0*(ud(4)-0.5d0*(temp0*tempd+temp*(2*u(2)*&
+&       ud(2)+2*u(3)*ud(3))))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*(temp*temp0))
     END DO
     DO i=1,interior_points
       k = interior_points_index(i)
@@ -161,9 +161,9 @@ CONTAINS
       pointd%prim(3, k) = temp*ud(3) + u(3)*tempd
       point%prim(3, k) = u(3)*temp
       temp0 = u(2)*u(2) + u(3)*u(3)
-      pointd%prim(4, k) = 0.4d0*ud(4) - 0.2d0*(temp0*tempd+temp*(2*u(2)*&
-&       ud(2)+2*u(3)*ud(3)))
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*(temp*temp0)
+      pointd%prim(4, k) = 0.4d0*(ud(4)-0.5d0*(temp0*tempd+temp*(2*u(2)*&
+&       ud(2)+2*u(3)*ud(3))))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*(temp*temp0))
     END DO
   END SUBROUTINE STATE_UPDATE_D
 
@@ -205,7 +205,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,outer_points
       k = outer_points_index(i)
@@ -227,7 +227,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
     DO i=1,interior_points
       k = interior_points_index(i)
@@ -255,7 +255,7 @@ CONTAINS
       temp = 1.0d0/u(1)
       point%prim(2, k) = u(2)*temp
       point%prim(3, k) = u(3)*temp
-      point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
+      point%prim(4, k) = 0.4d0*(u(4)-0.5d0*temp*(u(2)*u(2)+u(3)*u(3)))
     END DO
   END SUBROUTINE STATE_UPDATE
 
