@@ -49,7 +49,7 @@ def remove_pre_existing_executable():
             raise Exception("Unable to remove pre existing executables")
             sys.exit(1)
 
-def build(mfcfd_type=None, extra_flags=[], dest_path=None):
+def build(mfcfd_type=None, extra_flags=[], dest_path=None, cmake_extra_flags=[]):
 
     if mfcfd_type == "primal":
         mfcfd_var = "PRIMAL"
@@ -63,7 +63,7 @@ def build(mfcfd_type=None, extra_flags=[], dest_path=None):
         mfcfd_var = "PRIMAL"
         
     try:
-        subprocess.check_call(["cmake", mfcfd_parent_dir, "-DMFCFD={}".format(mfcfd_var)], cwd=mfcfd_build_dir)
+        subprocess.check_call(["cmake", mfcfd_parent_dir, "-DMFCFD={}".format(mfcfd_var)] + cmake_extra_flags, cwd=mfcfd_build_dir)
     except subprocess.CalledProcessError:
         print("CMAKE failed")
         sys.exit(1)
@@ -82,7 +82,7 @@ def build(mfcfd_type=None, extra_flags=[], dest_path=None):
             sys.exit(1)
     print("MFCFD has been built and a 'execname' file has been generated in the current working directory.")
 
-def install(mfcfd_type=None, extra_flags=[], dest_path=None):
+def install(mfcfd_type=None, extra_flags=[], dest_path=None, cmake_extra_flags=[]):
     print("Building {} Meshfree Solver.".format(mfcfd_type))
     cleanup_build_directory()
     remove_pre_existing_executable()
@@ -98,7 +98,7 @@ def install(mfcfd_type=None, extra_flags=[], dest_path=None):
                 print("your CMake installation and try again.")
                 print("Attempted to execute: {}".format("cmake"))
                 sys.exit(1)
-            build(mfcfd_type, extra_flags, dest_path)
+            build(mfcfd_type, extra_flags, dest_path, cmake_extra_flags)
         else:
             raise Exception("Invalid CMakeLists.txt found.")
             sys.exit(1)
@@ -118,6 +118,10 @@ def driver():
         "--extra", dest="extra_flags", action="append", required=False,
         default=[],
         help="Extra flags for make command.")
+    parser.add_argument(
+        "--cextra", dest="cmake_extra_flags", action="append", required=False,
+        default=[],
+        help="Extra flags for cmake command.")
     parser.add_argument(
         "--destination", dest="dest_path", required=False,
         default=None,
