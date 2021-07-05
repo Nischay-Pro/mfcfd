@@ -185,11 +185,11 @@ module data_structure_mod
                 allocate(point%ypos_nbhs(max_points))
                 allocate(point%yneg_nbhs(max_points))
 
-                allocate(point%xpos_conn(max_points,25))
-                allocate(point%xneg_conn(max_points,25))
+                allocate(point%xpos_conn(max_points,15))
+                allocate(point%xneg_conn(max_points,15))
 
-                allocate(point%ypos_conn(max_points,25))
-                allocate(point%yneg_conn(max_points,25))
+                allocate(point%ypos_conn(max_points,15))
+                allocate(point%yneg_conn(max_points,15))
 
                 allocate(Cl(shapes))
                 allocate(Cd(shapes))
