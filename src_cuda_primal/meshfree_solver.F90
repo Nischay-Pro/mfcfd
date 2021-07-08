@@ -106,6 +106,8 @@ program meshfree_solver
     
     !       Save solution one last time
     call print_primal_output()
+
+    call compute_enstrophy()
     
     !       Deallocate point/solution vectors
     call deallocate_soln()
