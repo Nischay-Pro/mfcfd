@@ -55,8 +55,8 @@ def build(mfcfd_type=None, extra_flags=[], dest_path=None, cmake_extra_flags=[])
         mfcfd_var = "CUDA_PRIMAL"
     elif mfcfd_type == "mpi_primal":
         mfcfd_var = "MPI_PRIMAL"
-    elif mfcfd_type == "tangent":
-        mfcfd_var = "TANGENT"
+    elif mfcfd_type == "mpi_tangent":
+        mfcfd_var = "MPI_TANGENT"
     elif mfcfd_type == "adjoint":
         mfcfd_var = "ADJOINT"
     elif mfcfd_type == "cuda_2nd":
@@ -116,7 +116,7 @@ def driver():
         description="Compile and Install Meshfree Solver.")
     parser.add_argument(
         "--mfcfd", dest="mfcfd_type", required=True,
-        choices=["cuda_2nd", "cuda_3rd", "cuda_primal", "mpi_primal", "tangent", "adjoint"], default="primal",
+        choices=["cuda_2nd", "cuda_3rd", "cuda_primal", "mpi_primal", "mpi_tangent", "adjoint"], default="primal",
         help="Meshfree Solver to install.")
     parser.add_argument(
         "--extra", dest="extra_flags", action="append", required=False,
