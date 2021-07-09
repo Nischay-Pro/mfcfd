@@ -328,12 +328,12 @@ module compute_entropy_mod
                     enddo
     !
     ! 
-                    ! OPEN(UNIT=301,FILE="enstrophy",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                    OPEN(UNIT=301,FILE="enstrophy",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                     do i = 1, max_points                 
                          enstrophy = enstrophy + point%enstrophy(i)
-                        ! write(301,*) point%enstrophy(i)
+                        write(301,*) point%enstrophy(i)
                     enddo 	         
-                    ! close(unit=301)              
+                    close(unit=301)              
     !                        
                     cost_func = enstrophy
     !                        
