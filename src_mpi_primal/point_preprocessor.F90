@@ -5,6 +5,8 @@ module point_preprocessor_mod
     USE HDF5
     ! USE ReadH5dataset
 
+#include <petsc/finclude/petscsys.h>
+
 contains
 
 subroutine dealloc_points()
@@ -33,8 +35,6 @@ subroutine dealloc_points()
 end subroutine
 
 subroutine read_hdf5input_point_data()
-
-#include <petsc/finclude/petscsys.h>
 
         use petscsys
 
