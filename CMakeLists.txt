@@ -64,11 +64,11 @@ FILE(GLOB MFCFD_SENSE_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_tangent/phi_files/*.F
 add_executable(execname ${MFCFD_SOURCES} ${MFCFD_SENSE_SOURCES})
 target_link_libraries(execname ${LIBS})
 
-elseif( "${MFCFD}" MATCHES "ADJOINT" )
+elseif( "${MFCFD}" MATCHES "MPI_ADJOINT" )
 message("Building Adjoint Meshfree Solver")
 add_compile_options(-march=native -O3)
 FILE(GLOB MFCFD_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_adjoint/*.F90")
-FILE(GLOB MFCFD_SENSE_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_adjoint/sensitivity_files/*.F90")
+FILE(GLOB MFCFD_SENSE_SOURCES "${CMAKE_SOURCE_DIR}/src_mpi_adjoint/phi_files/*.F90")
 set(MFCFD_AD_SOURCES ${CMAKE_SOURCE_DIR}/src_mpi_adjoint/ADFirstAidKit/adBuffer.f ${CMAKE_SOURCE_DIR}/src_mpi_adjoint/ADFirstAidKit/adStack.c ${CMAKE_SOURCE_DIR}/src_mpi_adjoint/revolve.f)
 #message(${MFCFD_AD_SOURCES})
 set_source_files_properties(${MFCFD_SOURCES} PROPERTIES COMPILE_FLAGS -ffree-line-length-512)
