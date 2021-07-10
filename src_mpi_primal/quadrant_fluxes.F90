@@ -21,8 +21,6 @@ contains
                 double precision A1neg, A2neg
                 double precision temp1, temp2, temp3, temp4
                 double precision pr_by_rho, u_sqr
-                double precision derf
-
 
                 tx = ny
                 ty = -nx
@@ -81,7 +79,6 @@ contains
                 double precision A1pos, A2neg
                 double precision temp1, temp2, temp3, temp4
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
 
                 tx = ny
@@ -142,7 +139,6 @@ contains
                 double precision A1pos, A2pos
                 double precision temp1, temp2, temp3, temp4
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
 
                 tx = ny
@@ -202,7 +198,6 @@ contains
                 double precision A1neg, A2pos
                 double precision temp1, temp2, temp3, temp4
                 double precision pr_by_rho, u_sqr
-                double precision derf
            
           
                 tx = ny

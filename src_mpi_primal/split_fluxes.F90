@@ -14,7 +14,6 @@ contains
                 double precision beta, S1, B1, A1pos
                 double precision temp1, temp2
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
 
 
@@ -62,7 +61,6 @@ contains
                 double precision beta, S1, B1, A1neg
                 double precision temp1, temp2
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
                 tx = ny
                 ty = -nx
@@ -108,7 +106,6 @@ contains
                 double precision beta, S2, B2, A2pos
                 double precision temp1, temp2
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
                 tx = ny
                 ty = -nx
@@ -155,7 +152,6 @@ contains
                 double precision beta, S2, B2, A2neg
                 double precision temp1, temp2
                 double precision pr_by_rho, u_sqr
-                double precision derf
 
 
                 tx = ny
