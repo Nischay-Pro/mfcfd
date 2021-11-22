@@ -2,6 +2,7 @@ src/
 cp/
 point/
 solution/
+build/*
 residue
 graphpart
 execname
