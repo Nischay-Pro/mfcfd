@@ -25,14 +25,6 @@ set(LIBS ${LIBS} ${CUDA_LIBRARIES})
 
 endif()
 
-#------------------------------------------------------------------------------#
-# HDF5 support
-#------------------------------------------------------------------------------#
-find_package(HDF5 COMPONENTS C CXX Fortran REQUIRED)
-link_directories( ${HDF5_LIBRARY_DIRS})
-include_directories(${HDF5_Fortran_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${HDF5_Fortran_LIBRARIES})
-
 if( "${MFCFD}" MATCHES "CUDA_PRIMAL" )
 message("Building Cuda 3rd order Primal Meshfree Solver")
 #add_compile_options(-Mcuda=nordc,lineinfo -Mcuda=keepptx,ptxinfo)
