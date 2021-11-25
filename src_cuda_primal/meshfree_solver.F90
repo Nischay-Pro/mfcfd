@@ -71,7 +71,7 @@ program meshfree_solver
 
     	! Reading the input data ..
     write(*,*)'%%%%%%%%%%%%-Reading HDF5 point data-%%%%%%%%%%%'
-    call read_hdf5input_point_data()
+    call read_input_point_data()
 
     ! write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
     ! call read_input_point_data()
