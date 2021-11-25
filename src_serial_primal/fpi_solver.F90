@@ -1,5 +1,5 @@
 module fpi_solver_mod
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
         use data_structure_mod
         use flux_residual_mod
         use state_update_mod
@@ -16,7 +16,7 @@ contains
                 implicit none
                 
                 integer :: t, i, rk
-                PetscErrorCode :: ierr
+                ! PetscErrorCode :: ierr
 
                 do i =1, local_points
                         point%prim_old(:, i) = point%prim(:, i)
@@ -69,11 +69,11 @@ contains
                 
                 call objective_function()
 
-                call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
-                   0, PETSC_COMM_WORLD, ierr)
+                ! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
+                !    0, PETSC_COMM_WORLD, ierr)
 
-                call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-                  ierr)
+                ! call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                !   ierr)
 
                 res_new = dsqrt(gsum_res_sqr)/plen
 

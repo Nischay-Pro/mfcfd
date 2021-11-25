@@ -1,8 +1,8 @@
 module compute_entropy_mod
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
     
     use data_structure_mod
-    use petsc_data_structure_mod
+    ! use petsc_data_structure_mod
     
     contains
     
@@ -15,7 +15,7 @@ module compute_entropy_mod
         integer :: k
         real*8 :: temp1, temp2
         real*8 :: gtotal_entropy
-        PetscErrorCode :: ierr
+        ! PetscErrorCode :: ierr
         
         total_entropy = 0.d0
         
@@ -53,7 +53,7 @@ module compute_entropy_mod
         real*8 :: one_by_det
         real*8 :: du1_dy, du2_dx, temp, du1_sqr_dx_sqr, du2_sqr_dy_sqr, du1_dx, du2_dy
         real*8 :: gtotal_enstrophy
-        PetscErrorCode :: ierr
+        ! PetscErrorCode :: ierr
         
         total_enstrophy = 0.d0
         
@@ -108,8 +108,8 @@ module compute_entropy_mod
             total_enstrophy = total_enstrophy + ((du1_dx * du1_dx) + (du2_dx * du2_dx) + (du1_dy * du1_dy) + (du2_dy * du2_dy)) * point%vor_area(i)
             
         enddo
-        call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
-        & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+        ! call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+        ! & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
         
         if(rank == 0) then
             write(*,*)"total enstrophy :", gtotal_enstrophy
