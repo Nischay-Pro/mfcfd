@@ -386,6 +386,18 @@ MODULE STATE_UPDATE_MOD_DIFF
   !	This subroutine computes the delta_t (local time step) at a given point ..
     SUBROUTINE FUNC_DELTA_B()
       IMPLICIT NONE
+  ! if(timestep == 1) then
+  !         do i = 1, local_points
+  !                 if (point%delta(i).lt.lmin) lmin=point%delta(i)
+  !         end do
+  !         call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+  !                 & PETSC_COMM_WORLD, ierr)
+  !         call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+  !                  & ierr)
+  !         dtg = gmin
+  !         if(t+dtg > tfinal) dtg = tfinal - t
+  !         point%delta = dtg
+  ! end if
       INTEGER :: i, k, r
       REAL*8 :: delta_t
       REAL*8 :: delta_tb
@@ -484,6 +496,18 @@ MODULE STATE_UPDATE_MOD_DIFF
   !	This subroutine computes the delta_t (local time step) at a given point ..
     SUBROUTINE FUNC_DELTA()
       IMPLICIT NONE
+  ! if(timestep == 1) then
+  !         do i = 1, local_points
+  !                 if (point%delta(i).lt.lmin) lmin=point%delta(i)
+  !         end do
+  !         call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+  !                 & PETSC_COMM_WORLD, ierr)
+  !         call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+  !                  & ierr)
+  !         dtg = gmin
+  !         if(t+dtg > tfinal) dtg = tfinal - t
+  !         point%delta = dtg
+  ! end if
       INTEGER :: i, k, r
       REAL*8 :: delta_t
       REAL*8 :: min_dist
