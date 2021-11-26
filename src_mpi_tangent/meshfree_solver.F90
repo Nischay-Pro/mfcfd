@@ -47,7 +47,7 @@ program meshfree_solver
                 write(*,*)
         end if
 
-        call read_hdf5input_point_data()
+        call read_input_point_data()
 
         if(rank == 0) then
             write(*,*)
