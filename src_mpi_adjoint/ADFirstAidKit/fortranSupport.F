@@ -20,4 +20,12 @@ C for now just set this to be scalars of the matching type
         INTEGER areal
 C for now do nothing
       end subroutine
+
+      subroutine ADTOOL_AMPI_fortranSetupBindings()
+#include "ampi/ampif.h"
+      call ADTOOL_AMPI_sendfortranbindings(
+     +     MPI_BOTTOM, MPI_IN_PLACE,
+     +     MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE,
+     +     MPI_ERRCODES_IGNORE, MPI_ARGV_NULL, MPI_ARGVS_NULL)
+      end subroutine
 #endif

@@ -1,4 +1,4 @@
-c$Id: validityTest.f 1443 2006-10-24 11:21:23Z llh $
+c$Id$
       BLOCK DATA validityTestBD
 C Keeps the current bounds of the validity interval
 C Initial value is ]-infinity, +infinity[
