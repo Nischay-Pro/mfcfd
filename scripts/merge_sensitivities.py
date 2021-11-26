@@ -21,7 +21,8 @@ def main():
     phiFiles = glob.glob(os.path.join(phiPath, "phid-*"))
     for phiFile in phiFiles:
         data = open(phiFile).read().split("\n")
-        for itm in data[1:-1]:
+        local_points = int(" ".join(data[0].split()).split(" ")[0])
+        for itm in data[1:local_points+1]:
             itm = " ".join(itm.split()).split(" ")
             mergedPhi[int(itm[0])] = tuple(map(float,itm[1:]))
     mergedPhi = dict(sorted(mergedPhi.items()))
