@@ -145,6 +145,31 @@ subroutine read_input_point_data()
 
 end subroutine
 
+subroutine dealloc_points()
+    implicit none
+
+    deallocate(point%x)
+    deallocate(point%y)
+    deallocate(point%flag_1)
+    deallocate(point%flag_2)
+    deallocate(point%nx)
+    deallocate(point%ny)
+    deallocate(point%nbhs)
+    deallocate(point%qtdepth)
+    deallocate(point%conn)
+    deallocate(point%min_dist)
+    deallocate(point%left)
+    deallocate(point%right)
+    deallocate(point%original_id)
+
+    deallocate(wall_points_index)
+    deallocate(interior_points_index)
+    deallocate(outer_points_index)
+    
+    if(allocated(pghost)) deallocate(pghost)
+
+end subroutine
+
 subroutine read_phi_data()
 
     implicit none
