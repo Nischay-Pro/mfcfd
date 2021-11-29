@@ -50,10 +50,10 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 def maxDictValue(data):
-    return max(abs(i) for v in data.values() for i in v)
+    return max(i for v in data.values() for i in v)
 
 def minDictValue(data):
-    return min(abs(i) for v in data.values() for i in v)
+    return min(i for v in data.values() for i in v)
 
 def normalizeList(data, value):
     return [(itm / value) for itm in data]

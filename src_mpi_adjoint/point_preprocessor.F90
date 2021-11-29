@@ -28,7 +28,7 @@ contains
 
                 read(101,*) nproc, max_points, local_points, ghost_points
                 if(proc .ne. nproc) then
-                        SETERRA(PETSC_COMM_WORLD,1,'check number of partitions and proc')
+                        SETERRQ(PETSC_COMM_WORLD,1,'check number of partitions and proc')
                 end if
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
@@ -69,7 +69,7 @@ contains
 
                                 if(point%flag_2(k) > 0) then
                                         if(point%flag_2(k) > shapes)then
-                                                SETERRA(PETSC_COMM_WORLD,1,'shapes value wrong, check again')
+                                                SETERRQ(PETSC_COMM_WORLD,1,'shapes value wrong, check again')
                                         end if
                                         shape_points = shape_points + 1
                                 end if
