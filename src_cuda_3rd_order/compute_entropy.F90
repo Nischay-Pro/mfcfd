@@ -30,5 +30,137 @@ module compute_entropy_mod
 
                 end subroutine 
 
+                subroutine compute_enstrophy_circulation_vorticity(iter)
+        
+                        implicit none
+                        
+                        integer :: i, k, r, nbh, iter, leftpt, rightpt
+                        real*8 :: x_i, y_i, x_k, y_k
+                        real*8 :: delx, dely, dist, weights
+                        real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                        real*8 :: sum_delx_delu1, sum_delx_delu2, sum_dely_delu1, sum_dely_delu2
+                        real*8 :: sum_delx_sqr_delu1_sqr, sum_delx_sqr_delu2_sqr, sum_dely_sqr_delu1_sqr, sum_dely_sqr_delu2_sqr
+                        real*8 :: det
+                        real*8 :: one_by_det, point_circulation
+                        real*8 :: du1_dy, du2_dx, temp, du1_sqr_dx_sqr, du2_sqr_dy_sqr, du1_dx, du2_dy, vorticity, circulation
+                        real*8 :: enstrophy, temp_enstrophy
+        
+                        real*8 :: mx, my, lx, ly, rx, ry, dx1, dx2, dy1, dy2, dx, dy, u1, u2
+                        
+                        enstrophy = 0.d0
+                        circulation = 0.d0
+                        vorticity = 0.d0
+                        
+                        do i = 1, max_points  
+                            
+                            x_i = point%x(i)
+                            y_i = point%y(i)
+                            
+                            sum_delx_sqr = 0.d0
+                            sum_dely_sqr = 0.d0
+                            sum_delx_dely = 0.d0
+                            
+                            sum_delx_delu1 = 0.d0
+                            sum_dely_delu1 = 0.d0
+                            sum_delx_delu2 = 0.d0
+                            sum_dely_delu2 = 0.d0
+        
+                            do k = 1, point%nbhs(i)
+                                
+                                nbh = point%conn(i,k)
+                                
+                                x_k = point%x(nbh)
+                                y_k = point%y(nbh)
+                                
+                                delx = x_k - x_i
+                                dely = y_k - y_i
+                                
+                                dist = dsqrt(delx*delx + dely*dely)
+                                weights = dist**power
+                                
+                                sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                                sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+                                
+                                sum_delx_dely = sum_delx_dely + delx*dely*weights
+                                
+                                sum_delx_delu1 = sum_delx_delu1 + weights*delx*(point%prim(2,nbh) - point%prim(2,i))
+                                sum_delx_delu2 = sum_delx_delu2 + weights*delx*(point%prim(3,nbh) - point%prim(3,i))
+                                sum_dely_delu1 = sum_dely_delu1 + weights*dely*(point%prim(2,nbh) - point%prim(2,i))
+                                sum_dely_delu2 = sum_dely_delu2 + weights*dely*(point%prim(3,nbh) - point%prim(3,i))
+                                
+                            enddo
+        
+                            if (point%flag_2(i) > 0.5d0) then
+                                mx = point%x(i)
+                                my = point%y(i)
+        
+                                leftpt = point%left(i)
+                                rightpt = point%right(i)
+        
+                                lx = point%x(leftpt)
+                                ly = point%y(leftpt)
+        
+                                rx = point%x(rightpt)
+                                ry = point%y(rightpt)
+        
+                                dx1 = mx - lx
+                                dy1 = my - ly
+        
+                                dx2 = rx - mx
+                                dy2 = ry - my
+        
+                                dx = (dx1 + dx2) * 0.5d0
+                                dy = (dy1 + dy2) * 0.5d0
+        
+                                u1 = point%prim(1,i)
+                                u2 = point%prim(2,i)
+        
+                                point_circulation = u1 * dx + u2 * dy
+        
+                                circulation = circulation + point_circulation
+                            end if
+                            
+                            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                            one_by_det = 1.0d0/det
+                            
+                            du2_dx = (sum_delx_delu2*sum_dely_sqr - sum_dely_delu2*sum_delx_dely)*one_by_det
+                            du1_dy = (sum_dely_delu1*sum_delx_sqr - sum_delx_delu1*sum_delx_dely)*one_by_det
+                            
+                            temp = du2_dx - du1_dy
+        
+                            vorticity = vorticity + (temp * temp * point%vor_area(i))
+                            
+        !                    point%vorticity(i) = temp
+                            
+        !                    point%vorticity_sqr(i) = temp*temp
+        
+                            du2_dy = (sum_dely_delu2 * sum_delx_sqr - sum_delx_delu2*sum_delx_dely) * one_by_det
+                            du1_dx = (sum_delx_delu1 * sum_dely_sqr - sum_dely_delu1*sum_delx_dely) * one_by_det
+        
+                            temp_enstrophy = ((du1_dx * du1_dx) + (du2_dx * du2_dx) + (du1_dy * du1_dy) + (du2_dy * du2_dy)) * point%vor_area(i)
+        
+                            enstrophy = enstrophy + temp_enstrophy
+                            
+                        enddo
+        
+                        open(unit=301, file="time_iterations", form="formatted", position="append", action="write")
+                        write(301, '(1i20,3e30.20)') iter, circulation, vorticity, enstrophy
+                        close(unit=301)
+                        
+        !
+        ! 
+                        ! OPEN(UNIT=301,FILE="enstrophy",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                        ! do i = 1, max_points                 
+                        !      enstrophy = enstrophy + point%enstrophy(i)
+                        !     write(301,*) point%enstrophy(i)
+                        ! enddo 	         
+                        ! close(unit=301)              
+        !                        
+        !                 cost_func = enstrophy
+        ! !                        
+        !                 write(*,*) "Objective Function (J)", enstrophy
+        
+                end subroutine 	
+
 
 end module compute_entropy_mod

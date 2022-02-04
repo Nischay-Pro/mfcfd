@@ -107,7 +107,7 @@ module compute_entropy_mod
                         cost_func = total_enstrophy
                         ! write(*,*) "Objective Function (J)", total_enstrophy
     
-                end subroutine 	
+                end subroutine
     
                 subroutine compute_sum_div_enstrophy()
         

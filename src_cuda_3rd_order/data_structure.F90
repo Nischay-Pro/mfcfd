@@ -33,6 +33,7 @@ module data_structure_mod
                 integer*1, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable :: entropy
+                real*8, dimension(:), allocatable :: vor_area
 
         end type points
 
@@ -196,6 +197,7 @@ module data_structure_mod
                 allocate(Cm(shapes))
 
                 allocate(point%entropy(max_points))
+                allocate(point%vor_area(max_points))
         end subroutine
 
         subroutine deallocate_soln()
@@ -222,6 +224,7 @@ module data_structure_mod
                 deallocate(Cm)
 
                 deallocate(point%entropy)
+                deallocate(point%vor_area)
         end subroutine
 
 end module data_structure_mod

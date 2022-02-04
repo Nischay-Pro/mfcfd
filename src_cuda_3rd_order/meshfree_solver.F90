@@ -16,6 +16,7 @@ program meshfree_solver
     integer :: accessPeer1, accessPeer2
     real*8  :: start,finish, runtime
     type(cudaDeviceProp) :: prop
+    logical :: exist
     
     call cpu_time(start)
     
@@ -82,6 +83,12 @@ program meshfree_solver
     write(*,*) 'Number of interior points:', interior_points
     write(*,*) 'Number of outer points:   ', outer_points
     write(*,*)
+
+    !Delete the old output files
+    inquire(file="time_iterations", exist=exist)
+    if (exist) then
+        call system("rm time_iterations")
+    end if
     
     !       Allocate solution variables
     call allocate_soln()
