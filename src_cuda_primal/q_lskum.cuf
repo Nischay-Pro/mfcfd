@@ -10,7 +10,7 @@ module q_lskum_mod
         use post_processing_mod
         use cudafor
         use ieee_arithmetic
-
+        use compute_entropy_mod
 
         real*8 :: sum_res_sqr, residue
         real*8, device :: temp
@@ -144,6 +144,8 @@ contains
 
                         write(*,*) "iterations:", it, "residue:", residue
                         write(301,*) it, residue
+                        call device_to_host()
+                        call compute_enstrophy_circulation_vorticity(it)
 
                         if(ieee_is_nan(residue))exit
         
