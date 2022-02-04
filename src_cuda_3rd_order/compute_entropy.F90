@@ -90,7 +90,7 @@ module compute_entropy_mod
                                 
                             enddo
         
-                            if (point%flag_2(i) > 0.5d0) then
+                            if (point%flag_2(i) > 0) then
                                 mx = point%x(i)
                                 my = point%y(i)
         
@@ -112,8 +112,8 @@ module compute_entropy_mod
                                 dx = (dx1 + dx2) * 0.5d0
                                 dy = (dy1 + dy2) * 0.5d0
         
-                                u1 = point%prim(1,i)
-                                u2 = point%prim(2,i)
+                                u1 = point%prim(2,i)
+                                u2 = point%prim(3,i)
         
                                 point_circulation = u1 * dx + u2 * dy
         

@@ -13,6 +13,17 @@ contains
 
                 call setup_case_parameters()
 
+                open(unit=109, file="vor_area", form="formatted", action="read")
+        
+                write(*,*) '%%%%%%%%%%%%-Reading Voronoi Area-%%%%%%%%%%%%'
+                write(*,*) 
+        
+                do k=1, max_points
+                        read(109,*) point%vor_area(k)
+                end do
+        
+                close(unit=109)
+
                 if(solution_restart .eq. 0) then
 
                         do k=1, max_points

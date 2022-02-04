@@ -117,8 +117,8 @@ def main():
     
     segments += outerSegments
 
-    holes = [(0.367, 0), (1.14, -0.06)]
-    # holes = [(0.31, -0.012)]
+    # holes = [(0.367, 0), (1.14, -0.06)]
+    holes = [(0.31, -0.012)]
     # for wall in wallSegmentsCords:
     #     holes.append(random_points_within(wall, 1))
 
@@ -213,7 +213,8 @@ def main():
 
 def calculateCirculation(pointData, generalData):
     maxGeo = 0
-    max_circulation = [0, 0]
+    # max_circulation = [0, 0]
+    max_circulation = [0]
     for ptidx in pointData.keys():
         pt = pointData[ptidx]
         if pt["geometry"] > 0:
