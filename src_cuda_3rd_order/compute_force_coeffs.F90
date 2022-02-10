@@ -31,7 +31,7 @@ module compute_force_coeffs_mod
 
                         do j = 1, shape_points
 
-                                m = j
+                                m = shape_points_index(j)
                                 r = point%right(m) 
                                 l = point%left(m) 
 

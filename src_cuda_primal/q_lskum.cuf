@@ -144,8 +144,13 @@ contains
 
                         write(*,*) "iterations:", it, "residue:", residue
                         write(301,*) it, residue
-                        call device_to_host()
-                        call compute_enstrophy_circulation_vorticity(it)
+
+
+                        if (per_cycle_enstrophy == .true.) then
+                                call device_to_host()
+                                call compute_enstrophy_circulation_vorticity(it)
+                        endif
+
 
                         if(ieee_is_nan(residue))exit
         

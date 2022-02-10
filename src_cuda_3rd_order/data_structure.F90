@@ -104,6 +104,9 @@ module data_structure_mod
 !       Block input
         integer :: blockx = 32, blocky = 1, blockz = 1
 
+!       Per cycle enstrophy
+        logical :: per_cycle_enstrophy = .false.
+
         namelist / input_parameters /   &
                       shapes, &
                              cfl, &
@@ -121,7 +124,8 @@ module data_structure_mod
                           tscheme, &
                           mach, &
                           aoa, &
-                          inner_iterations
+                          inner_iterations, &
+                          per_cycle_enstrophy
 
 
     contains
@@ -153,8 +157,6 @@ module data_structure_mod
                 elseif(restart_solution == 'yes') then
                         solution_restart = 1
                 end if
-
-
 
                 if(tscheme == 'first') then
                         rks = 1
