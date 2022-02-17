@@ -1198,7 +1198,7 @@ contains
                         q = q_d(r,k)
                         ! del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) - q
                         del_neg = q_d(r,k) - 0.5d0*fo_flag*(delx*dq_d(1,r,k) + dely*dq_d(2,r,k)) + &
-                        & (1.0d0/12.0d0)*(delx*delx*ddq_d(1,r,k) + 2.0d0*delx*dely*ddq_d(2,r,k) + dely*dely*ddq_d(3,r,k)) - q
+                        & (1.0d0/12.0d0)*fo_flag*(delx*delx*ddq_d(1,r,k) + 2.0d0*delx*dely*ddq_d(2,r,k) + dely*dely*ddq_d(3,r,k)) - q
                         if(dabs(del_neg) .le. 10e-6) then
                                 qtilde(threadid + blockd * (r-1)) = 1.0d0
                         else if(dabs(del_neg) .gt. 10e-6) then
