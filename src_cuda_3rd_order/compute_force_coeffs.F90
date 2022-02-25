@@ -58,7 +58,7 @@ module compute_force_coeffs_mod
                                 cp = point%prim(4,m) - pr_inf
                                 cp = -cp/temp
 
-                                write(201, *) point%flag_2(m), point%x(m), cp
+                                write(201, *) j, m, point%flag_2(m), point%x(m), point%y(m), cp
 
                                 H(point%flag_2(m)) = H(point%flag_2(m)) + cp*nx*ds
                                 V(point%flag_2(m)) = V(point%flag_2(m)) + cp*ny*ds
