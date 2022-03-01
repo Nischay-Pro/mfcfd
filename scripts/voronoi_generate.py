@@ -1,12 +1,15 @@
 import geopandas as gpd
 from shapely.ops import voronoi_diagram as svd
 import shapely.ops as so
-from shapely.geometry import Polygon, MultiPolygon, MultiPoint, Point
+from shapely.geometry import Polygon, MultiPolygon, MultiPoint, Point, LineString
 import os
 import argparse
 import math
 import matplotlib.pyplot as plt
 import tqdm
+from scipy.spatial import Voronoi, voronoi_plot_2d
+import matplotlib.pyplot as plt
+import numpy as np
 
 def main():
     parser = argparse.ArgumentParser()
@@ -38,10 +41,10 @@ def main():
             "right": int(pt.split(" ")[3]),
             "type": int(pt.split(" ")[4]),
             "geometry": int(pt.split(" ")[5]),
-            "nx": float(pt.split(" ")[6]),
-            "ny": float(pt.split(" ")[7]),
-            "min_dist": float(pt.split(" ")[9]),
-            "nbhs": tuple(map(int, pt.split(" ")[11:]))
+            # "nx": float(pt.split(" ")[6]),
+            # "ny": float(pt.split(" ")[7]),
+            "min_dist": float(pt.split(" ")[6]),
+            "nbhs": tuple(map(int, pt.split(" ")[7:]))
         }
         if tmp["type"] == 0:
             wallPoints.append(idx + 1)
@@ -52,37 +55,82 @@ def main():
             outerPoints.append(idx + 1)
         globalPoints.append((tmp["x"], tmp["y"]))
         globaldata[idx + 1] = tmp
+
+    outer_radius = get_outer_radius(globaldata, outerPoints)
+    outer_pts, _ = circle(len(outerPoints) * 2,  outer_radius * 1.01)
+
+    for pt in outer_pts:
+        globalPoints.append(pt)
     
     assert len(globaldata.keys()) == points
 
     globalPoints = MultiPoint(globalPoints)
 
-    multiWalls = []
-    walls = []
-    curr_type = min_geometry
-    for pt in wallPoints:
-        if globaldata[pt]["geometry"] == curr_type:
-            walls.append((globaldata[pt]["x"], globaldata[pt]["y"]))
-        else:
-            multiWalls.append(Polygon(walls))
-            walls = []
-            walls.append((globaldata[pt]["x"], globaldata[pt]["y"]))
-            curr_type = globaldata[pt]["geometry"]
-    multiWalls.append(Polygon(walls))
+    basePoints = []
+    current_geometry = 1
 
+    for pt in wallPoints:
+        if globaldata[pt]["geometry"] == current_geometry:
+            basePoints.append(pt)
+            current_geometry += 1
+
+    wallGeometry = []
+    multiWalls = []
+
+    for pt in basePoints:
+        tmp = []
+        tmp.append(pt)
+        current_pt = pt
+        while True:
+            if current_pt == tmp[0] and len(tmp) > 1:
+                tmp.pop(-1)
+                break
+            else:
+                current_pt = globaldata[current_pt]["left"]
+                tmp.append(current_pt)
+        wallGeometry.append(tmp)
+    
+    for wallPoints in wallGeometry:
+        tmp = []
+        for pt in wallPoints:
+            tmp.append((globaldata[pt]["x"], globaldata[pt]["y"]))
+        multiWalls.append(Polygon(tmp))
+
+    # vor = Voronoi(globalPoints)
+    # fig = voronoi_plot_2d(vor)
+
+    # plt.show()
+    # exit()
     voronoi = svd(globalPoints)
     
-    assert len(voronoi.geoms) == points
+    # assert len(voronoi.geoms) == points
 
     search_list = list(globaldata.keys())
 
-    for idx, vor_poly in enumerate(tqdm.tqdm(voronoi.geoms)):
+    # voronoi_list = []
+
+    # for pt in tqdm.tqdm(search_list):
+    #     check_pt = Point(globaldata[pt]["x"], globaldata[pt]["y"])
+    #     for vor_idx, vor_poly in enumerate(voronoi.geoms):
+    #         if vor_idx not in voronoi_list:
+    #             if vor_poly.contains(check_pt):
+    #                 globaldata[pt]["voronoi"] = vor_poly
+    #                 globaldata[pt]["voronoi_area"] = vor_poly.area
+    #                 voronoi_list.append(vor_idx)
+    #                 search_list.remove(pt)
+    #                 break
+
+    for vor_poly in tqdm.tqdm(voronoi.geoms):
+        # checks = 0
         for pt in search_list:
+            # check_line = LineString([(globaldata[pt]["x"], globaldata[pt]["y"]), (globaldata[pt]["x"] + outer_radius, globaldata[pt]["y"])])
             check_pt = Point(globaldata[pt]["x"], globaldata[pt]["y"])
             if vor_poly.contains(check_pt):
                 globaldata[pt]["voronoi"] = vor_poly
                 globaldata[pt]["voronoi_area"] = vor_poly.area
                 search_list.remove(pt)
+                # print(checks)
+                # checks = 0
                 break
 
     for wallPt in wallPoints:
@@ -118,9 +166,9 @@ def main():
     # for geom in voronoi.geoms:
     #     plt.plot(*geom.exterior.xy)
         
-    plt.gca().axis("equal")
+    # plt.gca().axis("equal")
     # plt.savefig("temp.png")
-    plt.show()
+    # plt.show()
     
 
     # voronoi = voronoiDiagram4plg(gpd.GeoDataFrame(index=[0], crs=None, geometry=[globalPoints]), multiWalls)
@@ -192,6 +240,26 @@ def dropHoles(gdf):
 	gdf_nohole.crs = gdf.crs
 	return gdf_nohole
 
+def circle(N, R):
+    i = np.arange(N)
+    theta = i * 2 * np.pi / N
+    pts = np.stack([np.cos(theta), np.sin(theta)], axis=1) * R
+    seg = np.stack([i, i + 1], axis=1) % N
+    return pts, seg
+
+def get_outer_radius(gridData, outer_points):
+    outer_radius = 0
+    p1x = gridData[outer_points[0]]["x"]
+    p1y = gridData[outer_points[0]]["y"]
+    for pt in outer_points[1:]:
+        p2x = gridData[pt]["x"]
+        p2y = gridData[pt]["y"]
+        dist = math.sqrt((p1x - p2x)**2 + (p1y - p2y)**2)
+        if outer_radius == 0:
+            outer_radius = dist
+        else:
+            outer_radius = max(outer_radius, dist)
+    return outer_radius
 
 if __name__ == "__main__":
     main()
