@@ -59,6 +59,8 @@ def build(mfcfd_type=None, extra_flags=[], dest_path=None, cmake_extra_flags=[])
         mfcfd_var = "ADJOINT"
     elif mfcfd_type == "cuda":
         mfcfd_var = "CUDA"
+    elif mfcfd_type == "cuda_adjoint":
+        mfcfd_var = "CUJOINT"
     else:
         mfcfd_var = "PRIMAL"
         
@@ -112,7 +114,7 @@ def driver():
         description="Compile and Install Meshfree Solver.")
     parser.add_argument(
         "--mfcfd", dest="mfcfd_type", required=True,
-        choices=["cuda", "primal", "tangent", "adjoint"], default="primal",
+        choices=["cuda", "primal", "tangent", "adjoint", "cuda_adjoint"], default="primal",
         help="Meshfree Solver to install.")
     parser.add_argument(
         "--extra", dest="extra_flags", action="append", required=False,
